@@ -345,7 +345,7 @@
   </main>
 
   <script>
-    const API_BASE = `http://${window.location.hostname}:3002/api`;
+    const API_BASE = `//${window.location.hostname}:3002/api`;
     
     // Auth Check
     if (localStorage.getItem('kimani_token')) {
@@ -371,7 +371,7 @@
           error.style.display = 'block';
         }
       } catch (err) {
-        error.textContent = "Server offline. Make sure the brain is running.";
+        error.textContent = "The Strategy Brain is unreachable. Ensure the Node.js server is active on port 3002.";
         error.style.display = 'block';
       }
     });

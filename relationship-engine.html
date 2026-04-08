@@ -277,7 +277,7 @@
       
       <div class="chat-messages" id="chatMessages">
         <div class="message assistant">
-          Hello. I've been observing how some of the concepts on this page resonate with you. Is there a specific part of the Relationship Engine that feels most relevant to where your business is right now?
+          Most branding tries to scream. I prefer to listen. I've been watching how you're navigating the Relationship Engine—and I'm curious, which part of building market trust feels like the biggest hurdle for your business right now?
         </div>
       </div>
 
@@ -485,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
-      const response = await fetch(`http://${window.location.hostname}:3002/api/chat`, {
+      const response = await fetch(`//${window.location.hostname}:3002/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: text })
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch (error) {
       chatMessages.removeChild(typingDiv);
-      addMessage('assistant', "I'm currently optimizing my strategic engine to better serve your business goals. I'd love to have this conversation soon, feel free to book a demo or contact me directly!");
+      addMessage('assistant', "I'm currently deep in strategic thought, or perhaps just ensuring the engine is perfectly tuned for your market. Either way, let's not let the conversation end here. Reach out to me at enquiries@marketingwithkimani.co.ke and let's talk about your growth.");
       console.error('Chat error:', error);
     }
   }
