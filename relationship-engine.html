@@ -276,9 +276,7 @@
       </div>
       
       <div class="chat-messages" id="chatMessages">
-        <div class="message assistant">
-          Most branding tries to scream. I prefer to listen. I've been watching how you're navigating the Relationship Engine—and I'm curious, which part of building market trust feels like the biggest hurdle for your business right now?
-        </div>
+        <!-- AI Brain takes over greeting live -->
       </div>
 
       <div class="chat-input-area">
@@ -461,6 +459,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendBtn = document.getElementById('sendBtn');
   
   const sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
+  
+  // ─── INITIALIZE AI BRAIN GREETING ───
+  async function initChat() {
+    // Show typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message assistant typing';
+    typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    chatMessages.appendChild(typingDiv);
+    
+    try {
+      const response = await fetch(`//${window.location.hostname}:3002/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, message: "[CLIENT_LANDED_ON_PAGE]" })
+      });
+
+      const data = await response.json();
+      chatMessages.removeChild(typingDiv);
+
+      if (data.response) {
+        addMessage('assistant', data.response);
+      }
+    } catch (error) {
+      chatMessages.removeChild(typingDiv);
+      addMessage('assistant', "I'm currently deep in strategic thought, or perhaps just ensuring the engine is perfectly tuned for your market. Either way, let's not let the conversation end here. Reach out to me at enquiries@marketingwithkimani.co.ke and let's talk about your growth.");
+      console.error('Chat error:', error);
+    }
+  }
+
+  // Trigger AI Greeting
+  initChat();
 
   function addMessage(role, text) {
     const msgDiv = document.createElement('div');
