@@ -122,7 +122,7 @@ app.post("/api/chat", async (req, res) => {
 
 // ─── Dashboard API ───────────────────────────────────────────
 
-const DASHBOARD_PASSWORD = "kimani_dashboard_2024"; // Simple demo password
+const DASHBOARD_PASSWORD = "0727856464"; // Simple demo password
 
 app.post("/api/login", (req, res) => {
   const { password } = req.body;
