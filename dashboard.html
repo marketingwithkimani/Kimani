@@ -345,7 +345,8 @@
   </main>
 
   <script>
-    const API_BASE = `//${window.location.hostname}:3002/api`;
+    const host = window.location.hostname || 'localhost';
+    const API_BASE = `http://${host}:3002/api`;
     
     // Auth Check
     if (localStorage.getItem('kimani_token')) {
@@ -353,10 +354,16 @@
     }
 
     document.getElementById('loginBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('loginBtn');
       const password = document.getElementById('passCode').value;
       const error = document.getElementById('loginError');
       
+      btn.textContent = "Establishing Connection...";
+      btn.disabled = true;
+      error.style.display = 'none';
+      
       try {
+        console.log("Attempting login at:", `${API_BASE}/login`);
         const res = await fetch(`${API_BASE}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -368,11 +375,17 @@
           localStorage.setItem('kimani_token', data.token);
           showDashboard();
         } else {
+          error.textContent = "Access Denied. Incorrect Code.";
           error.style.display = 'block';
+          btn.textContent = "Enter Command Center";
+          btn.disabled = false;
         }
       } catch (err) {
-        error.textContent = "The Strategy Brain is unreachable. Ensure the Node.js server is active on port 3002.";
+        console.error("Login connection failed:", err);
+        error.textContent = "The Strategy Brain is unreachable at " + API_BASE + ". Ensure the Node.js server is active.";
         error.style.display = 'block';
+        btn.textContent = "Enter Command Center";
+        btn.disabled = false;
       }
     });
 
