@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kimani Dashboard | AI Relationship Control</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
+  <style>
+    :root {
+      --clr-bg-glass: rgba(18, 18, 18, 0.8);
+      --clr-border: rgba(255, 255, 255, 0.1);
+      --glass-blur: blur(20px);
+    }
+
+    body {
+      background: #0a0a0a;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(200, 242, 48, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(200, 242, 48, 0.03) 0%, transparent 40%);
+      min-height: 100vh;
+      color: var(--clr-white);
+      overflow-x: hidden;
+    }
+
+    /* ── LOGIN OVERLAY ── */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+
+    .login-card {
+      background: var(--clr-bg-glass);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--clr-border);
+      padding: 3rem;
+      border-radius: 32px;
+      width: 100%;
+      max-width: 440px;
+      text-align: center;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .login-logo {
+      width: 80px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .login-card h2 {
+      font-family: var(--ff-head);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .login-card p {
+      color: var(--clr-muted);
+      margin-bottom: 2rem;
+    }
+
+    .login-form input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--clr-border);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .login-form input:focus {
+      border-color: var(--clr-accent);
+    }
+
+    /* ── DASHBOARD LAYOUT ── */
+    #dashboardMain {
+      display: none;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .dash-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    .dash-nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-item {
+      padding: 0.6rem 1.2rem;
+      border-radius: 100px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 500;
+      color: var(--clr-muted);
+    }
+
+    .nav-item.active {
+      background: rgba(200, 242, 48, 0.1);
+      border-color: var(--clr-accent);
+      color: var(--clr-accent);
+    }
+
+    /* ── STATS GRID ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: var(--clr-bg-glass);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--clr-border);
+      padding: 2rem;
+      border-radius: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover { transform: translateY(-5px); }
+
+    .stat-val {
+      font-size: 2.5rem;
+      font-weight: 800;
+      font-family: var(--ff-head);
+      color: var(--clr-accent);
+    }
+
+    .stat-label {
+      color: var(--clr-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+    }
+
+    /* ── DATA TABLES ── */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    .panel {
+      background: var(--clr-bg-glass);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--clr-border);
+      border-radius: 32px;
+      padding: 2rem;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      color: var(--clr-muted);
+      font-weight: 600;
+      padding: 1rem;
+      border-bottom: 1px solid var(--clr-border);
+      font-size: 0.85rem;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--clr-border);
+      font-size: 0.9rem;
+    }
+
+    .badge-stage {
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .stage-ready { background: rgba(200, 242, 48, 0.2); color: var(--clr-accent); }
+    .stage-curious { background: rgba(0, 150, 255, 0.2); color: #0096ff; }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .activity-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      border: 1px solid var(--clr-border);
+    }
+
+    .ai-action-dot {
+      width: 12px;
+      height: 12px;
+      background: var(--clr-accent);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--clr-accent);
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN SECTION -->
+  <div id="loginOverlay">
+    <div class="login-card">
+      <img src="assets/Logo Kimani.png" alt="Logo" class="login-logo">
+      <h2>Welcome Back, Kimani</h2>
+      <p>Enter your dashboard key to control the AI.</p>
+      <div class="login-form">
+        <input type="password" id="passCode" placeholder="Access Code">
+        <button id="loginBtn" class="btn btn-primary" style="width:100%; justify-content:center">Enter Command Center</button>
+      </div>
+      <p id="loginError" style="color: #ff4b2b; margin-top: 1rem; display: none;">Access Denied. Incorrect Code.</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD MAIN -->
+  <main id="dashboardMain">
+    <header class="dash-header">
+      <div class="nav-logo">
+        <img src="assets/Logo Kimani.png" alt="Logo">
+        <span class="logo-text">Dashboard</span>
+      </div>
+      <div class="dash-nav">
+        <div class="nav-item active" onclick="switchTab('overview')">Overview</div>
+        <div class="nav-item" onclick="switchTab('discovery')">AI Discovery</div>
+        <div class="nav-item">Settings</div>
+        <div style="margin-left: 1rem; padding: 0.6rem; background: rgba(255,255,255,0.05); border-radius: 50%; cursor: pointer;" onclick="logout()">🚪</div>
+      </div>
+    </header>
+
+    <div id="overviewTab" class="content-tab">
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+          <div class="stat-val" id="totalLeads">-</div>
+          <div class="stat-label">Total Leads</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="emailsSent">-</div>
+          <div class="stat-label">Emails Automated</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="conversionRate">-</div>
+          <div class="stat-label">Conversion Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="activeCampaigns">-</div>
+          <div class="stat-label">Active AI Runs</div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Collected Leads</h3>
+            <span class="badge stage-ready">Recently Captured</span>
+          </div>
+          <div class="table-container">
+            <table id="leadsTable">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Company</th>
+                  <th>Stage</th>
+                  <th>Via</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Data injected here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Potential Leads (Queue)</h3>
+            <button id="runAiBtn" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Run AI Engine</button>
+          </div>
+          <div class="activity-list" id="potentialQueue">
+            <!-- Data injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="discoveryTab" class="content-tab" style="display:none">
+      <div class="panel" style="margin-bottom: 2rem;">
+        <div class="panel-header">
+          <h3>AI Lead Discovery</h3>
+          <p style="color:var(--clr-muted); font-size: 0.9rem;">Tell the AI which industries to research.</p>
+        </div>
+        <div style="display:flex; gap:1rem; margin-top:1rem;">
+          <input type="text" id="industryInput" placeholder="e.g. Real Estate, Aviation, FinTech" style="flex:2; background:rgba(255,255,255,0.05); border:1px solid var(--clr-border); padding:0.8rem; border-radius:12px; color:#fff; outline:none;">
+          <input type="text" id="roleInput" placeholder="Target Role (e.g. CEO, Marketing Director)" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--clr-border); padding:0.8rem; border-radius:12px; color:#fff; outline:none;">
+          <button id="findLeadsBtn" class="btn btn-primary">Research Industry</button>
+        </div>
+      </div>
+
+      <div id="discoveryResults" class="grid-3" style="margin-top:2rem">
+        <!-- AI Found leads will appear here -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_BASE = `http://${window.location.hostname}:3002/api`;
+    
+    // Auth Check
+    if (localStorage.getItem('kimani_token')) {
+      showDashboard();
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const password = document.getElementById('passCode').value;
+      const error = document.getElementById('loginError');
+      
+      try {
+        const res = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('kimani_token', data.token);
+          showDashboard();
+        } else {
+          error.style.display = 'block';
+        }
+      } catch (err) {
+        error.textContent = "Server offline. Make sure the brain is running.";
+        error.style.display = 'block';
+      }
+    });
+
+    function showDashboard() {
+      document.getElementById('loginOverlay').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('dashboardMain').style.display = 'block';
+        loadDashboardData();
+      }, 500);
+    }
+
+    function logout() {
+      localStorage.removeItem('kimani_token');
+      location.reload();
+    }
+
+    async function loadDashboardData() {
+      // Load Stats
+      const statsRes = await fetch(`${API_BASE}/dashboard/stats`);
+      const stats = await statsRes.json();
+      document.getElementById('totalLeads').textContent = stats.totalLeads;
+      document.getElementById('emailsSent').textContent = stats.emailsSent;
+      document.getElementById('conversionRate').textContent = stats.conversionRate;
+      document.getElementById('activeCampaigns').textContent = stats.activeCampaigns;
+
+      // Load Leads
+      const leadsRes = await fetch(`${API_BASE}/dashboard/leads`);
+      const leads = await leadsRes.json();
+      const leadsTbody = document.querySelector('#leadsTable tbody');
+      leadsTbody.innerHTML = leads.map(l => `
+        <tr>
+          <td>
+            <div style="font-weight:600">${l.name}</div>
+            <div style="font-size:0.75rem; color:var(--clr-muted)">${l.email}</div>
+          </td>
+          <td>${l.company}</td>
+          <td><span class="badge-stage ${l.stage === 'Ready' ? 'stage-ready' : 'stage-curious'}">${l.stage}</span></td>
+          <td style="color:var(--clr-muted)">${l.capturedVia}</td>
+        </tr>
+      `).join('');
+
+      // Load Potential Queue
+      const potRes = await fetch(`${API_BASE}/dashboard/potential-leads`);
+      const potentials = await potRes.json();
+      const queue = document.getElementById('potentialQueue');
+      queue.innerHTML = potentials.map(p => `
+        <div class="activity-item">
+          <div class="ai-action-dot"></div>
+          <div>
+            <div style="font-weight:600; font-size: 0.95rem;">${p.company}</div>
+            <div style="font-size:0.8rem; color:var(--clr-accent); margin-top:0.2rem">AI Goal: ${p.strategy}</div>
+            <div style="font-size:0.75rem; color:var(--clr-muted); margin-top:0.2rem">Queue Status: ${p.status}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.content-tab').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      
+      document.getElementById(tab + 'Tab').style.display = 'block';
+      event.target.classList.add('active');
+    }
+
+    document.getElementById('runAiBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('runAiBtn');
+      btn.textContent = 'A.I. Thinking...';
+      btn.disabled = true;
+      
+      try {
+        const res = await fetch(`${API_BASE}/automation/run`, { method: 'POST' });
+        const data = await res.json();
+        
+        alert(data.message + "\n\nActions:\n" + data.actions.join("\n"));
+        
+        btn.textContent = 'Run AI Engine';
+        btn.disabled = false;
+      } catch (err) {
+        alert("Automation failed. Is the server running?");
+        btn.textContent = 'Run AI Engine';
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('findLeadsBtn').addEventListener('click', async () => {
+      const industry = document.getElementById('industryInput').value;
+      const role = document.getElementById('roleInput').value;
+      const resultsDiv = document.getElementById('discoveryResults');
+      const btn = document.getElementById('findLeadsBtn');
+
+      if (!industry) return alert("Please enter an industry to research.");
+
+      btn.textContent = "AI Researching...";
+      btn.disabled = true;
+      resultsDiv.innerHTML = '<p style="color:var(--clr-muted)">Researching ' + industry + ' markets...</p>';
+
+      try {
+        const res = await fetch(`${API_BASE}/leads/find`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ industry, targetRole: role })
+        });
+        const data = await res.json();
+        
+        resultsDiv.innerHTML = data.map(l => `
+          <div class="stat-card" style="text-align:left; border-radius:16px;">
+            <div style="font-weight:700; font-size:1.1rem; color:var(--clr-accent)">${l.name}</div>
+            <div style="margin-bottom:1rem">${l.companyName}</div>
+            <div style="font-size:0.8rem; color:var(--clr-muted)">${l.observations.join(', ')}</div>
+            <button onclick="sendLeadEmail('${l.prospectId}', '${l.industry}')" class="btn btn-primary" style="margin-top:1.5rem; width:100%; border-radius:8px; font-size:0.8rem;">Initialize AI Sequence</button>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        resultsDiv.innerHTML = '<p style="color:#ff4b2b">Discovery engine failed. Is the brain online?</p>';
+      } finally {
+        btn.textContent = "Research Industry";
+        btn.disabled = false;
+      }
+    });
+
+    async function sendLeadEmail(prospectId, industry) {
+      if (!confirm("Start AI Lead Generation sequence for this contact?")) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/leads/send-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prospectId, industry })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("AI Sequence Initialized!\n\nEmail Sent:\n" + data.email.subjectLine);
+        } else {
+          alert("Sequence failed. Check SMTP settings.");
+        }
+      } catch (err) {
+        alert("Server error.");
+      }
+    }
+  </script>
+</body>
+</html>

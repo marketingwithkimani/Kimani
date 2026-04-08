@@ -1,0 +1,25 @@
+# Sensitive Information
+.env
+Relationship/.env
+credentials.json
+token.json
+
+# Dependencies
+node_modules/
+Relationship/node_modules/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build & Temp
+dist/
+build/
+tmp/
+.gemini/
+*.log
+
+# XAMPP specific (if any)
+cgi-bin/

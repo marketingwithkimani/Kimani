@@ -1,0 +1,20 @@
+{
+  "webhooks": {
+    "incoming-message": {
+      "directive": "directives/relationship_ai.md",
+      "description": "Process an inbound client message through the full Relationship AI pipeline"
+    },
+    "scheduled-followup": {
+      "directive": "directives/relationship_ai.md",
+      "description": "Deliver a proactive follow-up message to a client"
+    },
+    "lead-capture": {
+      "directive": "directives/email_intelligence.md",
+      "description": "Process a new lead captured through the psychological hook system"
+    },
+    "execute-email-sequence": {
+      "directive": "directives/email_intelligence.md",
+      "description": "Send the next email in a prospect's sequence"
+    }
+  }
+}

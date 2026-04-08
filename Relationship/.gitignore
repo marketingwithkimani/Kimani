@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment & Credentials
+.env
+credentials.json
+token.json
+
+# Intermediate files (always regenerated)
+.tmp/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
