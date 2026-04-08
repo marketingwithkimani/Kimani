@@ -7,6 +7,7 @@
     "dev:local": "npx tsx execution/local_dev.ts",
     "dev:email": "npx tsx execution/email_dev.ts",
     "deploy": "npx trigger.dev@latest deploy",
+    "start": "npx tsx execution/server.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

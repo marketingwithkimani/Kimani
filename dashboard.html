@@ -345,8 +345,7 @@
   </main>
 
   <script>
-    const host = window.location.hostname || 'localhost';
-    const API_BASE = `http://${host}:3002/api`;
+    const API_BASE = `/api`;
     
     // Auth Check
     if (localStorage.getItem('kimani_token')) {

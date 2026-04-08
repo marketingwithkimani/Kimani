@@ -20,7 +20,7 @@ import { google } from "googleapis";
 import "dotenv/config";
 
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 
 app.use(cors({ origin: "*" }));
 app.use(express.json());
@@ -238,11 +238,10 @@ app.post("/api/leads/send-email", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Relationship AI Server running at http://localhost:${port}`);
-  
-  // Heartbeat to keep the process alive in certain environments
-  setInterval(() => {
-    // console.log("Heartbeat...");
-  }, 60000);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Relationship AI Server running at http://localhost:${port}`);
+  });
+}
+
+export default app;

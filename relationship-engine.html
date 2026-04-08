@@ -469,8 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.appendChild(typingDiv);
     
     try {
-      const host = window.location.hostname || 'localhost';
-      const response = await fetch(`http://${host}:3002/api/chat`, {
+      const response = await fetch(`/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: "[CLIENT_LANDED_ON_PAGE]" })
@@ -515,8 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
-      const host = window.location.hostname || 'localhost';
-      const response = await fetch(`http://${host}:3002/api/chat`, {
+      const response = await fetch(`/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: text })
