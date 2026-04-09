@@ -58,11 +58,17 @@ export async function sendEmailToProspect(
   };
 
   try {
+    if (!transporter.options.auth?.pass) {
+      throw new Error("SMTP Password (SMTP_PASS) is missing in environment variables.");
+    }
     const info = await transporter.sendMail(mailOptions);
     console.log(`✅ Email sent: ${info.messageId}`);
     return true;
   } catch (error) {
-    console.error(`❌ Failed to send email to ${prospect.email}:`, error);
+    console.error(`❌ STMP ERROR when sending to ${prospect.email}:`, error);
+    // Provide a clearer message for common errors
+    if (error.code === 'EAUTH') console.error("   Reason: Authentication failed (check user/pass)");
+    if (error.code === 'ESOCKET') console.error("   Reason: Connection timed out or DNS error");
     return false;
   }
 }
