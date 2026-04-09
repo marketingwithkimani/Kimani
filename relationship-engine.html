@@ -457,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
   
+  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002/api' : '/api';
   const sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
   
   // ─── INITIALIZE AI BRAIN GREETING ───
@@ -468,7 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.appendChild(typingDiv);
     
     try {
-      const response = await fetch(`/api/chat`, {
+      const response = await fetch(`${API_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: "[CLIENT_LANDED_ON_PAGE]" })
@@ -513,7 +514,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
-      const response = await fetch(`/api/chat`, {
+      const response = await fetch(`${API_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: text })
