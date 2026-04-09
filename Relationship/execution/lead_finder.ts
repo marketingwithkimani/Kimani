@@ -2,9 +2,11 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ProspectProfile } from "./email_types.js";
 import "dotenv/config";
 
+const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
+  apiKey: activeKey,
+  baseURL: activeKey?.startsWith("sk-or-v1") 
     ? "https://openrouter.ai/api/v1" 
     : undefined,
 });
@@ -20,7 +22,7 @@ export async function findPotentialLeads(
 ): Promise<ProspectProfile[]> {
   console.log(`\n🔍 AI Lead Finder: Researching ${targetRole} leads in "${industry}" market...`);
   
-  const isOpenRouter = process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1");
+  const isOpenRouter = activeKey?.startsWith("sk-or-v1");
   const model = isOpenRouter ? "anthropic/claude-3-haiku" : "claude-3-haiku-20240307";
 
   const prompt = `Act as an expert market intelligence analyst. 

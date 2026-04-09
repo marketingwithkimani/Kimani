@@ -28,9 +28,11 @@ import { MomentumState } from "./momentum_engine.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
+  apiKey: activeKey,
+  baseURL: activeKey?.startsWith("sk-or-v1") 
     ? "https://openrouter.ai/api/v1" 
     : undefined,
 });
@@ -237,7 +239,7 @@ export async function generateResponse(
 
   try {
     const response = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
+      model: activeKey?.startsWith("sk-or-v1")
         ? "anthropic/claude-3.5-sonnet"
         : "claude-3-5-sonnet-latest",
       max_tokens: 2048,
