@@ -84,24 +84,52 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = form.querySelector('button[type="submit"]');
       const msg = document.getElementById('formMsg');
       
+      const formData = {
+        fullName: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        organization: document.getElementById('organization') ? document.getElementById('organization').value : '',
+        interest: document.getElementById('interest') ? document.getElementById('interest').value : '',
+        message: document.getElementById('message') ? document.getElementById('message').value : ''
+      };
+
       // Loading state
       btn.disabled = true;
-      btn.textContent = 'Sending...';
+      const originalText = btn.textContent;
+      btn.textContent = 'Submitting...';
 
-      // Simulate send (replace with real endpoint)
-      setTimeout(() => {
-        btn.style.display = 'none';
-        if (msg) {
-          msg.style.display = 'block';
-          msg.style.animation = 'fadeInUp 0.5s ease';
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          btn.style.display = 'none';
+          if (msg) {
+            msg.style.display = 'block';
+            msg.style.textContent = data.message || "Thank you. I'll be in touch shortly.";
+            msg.style.animation = 'fadeInUp 0.5s ease';
+          }
+          form.reset();
+        } else {
+          alert('Submission failed: ' + (data.error || 'Unknown error'));
+          btn.disabled = false;
+          btn.textContent = originalText;
         }
-        form.reset();
-      }, 1200);
+      } catch (error) {
+        console.error('Form error:', error);
+        alert('Could not connect to the server. Please try again later.');
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
     });
   }
 

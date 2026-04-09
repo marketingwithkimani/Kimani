@@ -462,6 +462,9 @@
         
         alert(data.message + "\n\nActions:\n" + data.actions.join("\n"));
         
+        // Refresh dashboard to show new potential leads
+        loadDashboardData();
+        
         btn.textContent = 'Run AI Engine';
         btn.disabled = false;
       } catch (err) {

@@ -30,6 +30,9 @@ const __dirname = path.dirname(__filename);
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
+    ? "https://openrouter.ai/api/v1" 
+    : undefined,
 });
 
 function loadPersonality(): PersonalityConfig {
@@ -234,7 +237,9 @@ export async function generateResponse(
 
   try {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
+        ? "anthropic/claude-3.5-sonnet"
+        : "claude-3-5-sonnet-latest",
       max_tokens: 2048,
       system: systemPrompt,
       messages,

@@ -849,7 +849,7 @@ footer {
   .hero-text p { margin-left: auto; margin-right: auto; }
 
   .nav-menu  { display: none; }
-  .nav-cta .phone { display: none; }
+  .nav-cta   { display: none; }
   .hamburger { display: flex; }
   .footer-grid { grid-template-columns: 1fr; }
   .cta-section { padding: 3.5rem 2rem; }
@@ -877,7 +877,7 @@ footer {
 /* ── LOGO BELT ──────────────────────────────────────────────── */
 .logo-belt {
   background: #ffffff;
-  padding: 3rem 0;
+  padding: 1.2rem 0; /* Reduced height */
   overflow: hidden;
   position: relative;
   display: flex;
@@ -908,7 +908,7 @@ footer {
 .logo-track {
   display: flex;
   gap: 8rem;
-  animation: logoScroll 40s linear infinite;
+  animation: logoScroll 20s linear infinite; /* Faster speed */
   white-space: nowrap;
 }
 
@@ -917,18 +917,16 @@ footer {
 }
 
 .logo-track img {
-  height: 60px;
+  height: 48px; /* Slightly reduced height */
   width: auto;
   object-fit: contain;
-  filter: grayscale(1) contrast(0.8);
-  opacity: 0.7;
+  filter: none; /* Removed grayscale/black and white filter */
+  opacity: 1; /* Full opacity */
   transition: var(--transition);
 }
 
 .logo-track img:hover {
-  filter: grayscale(0) contrast(1);
-  opacity: 1;
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 @keyframes logoScroll {

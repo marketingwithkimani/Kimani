@@ -17,6 +17,9 @@ import {
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
+    ? "https://openrouter.ai/api/v1" 
+    : undefined,
 });
 
 const INTENT_ANALYSIS_PROMPT = `You are the Sales Intelligence Brain of a Relationship AI system.
@@ -88,7 +91,9 @@ Notes: ${clientProfile.notes || "None"}`);
 
   try {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
+        ? "anthropic/claude-3.5-sonnet"
+        : "claude-3-5-sonnet-latest",
       max_tokens: 1024,
       system: INTENT_ANALYSIS_PROMPT,
       messages: [

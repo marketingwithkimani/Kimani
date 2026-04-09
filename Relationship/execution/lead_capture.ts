@@ -17,6 +17,9 @@ import { LeadCaptureHook, LeadCapturePage } from "./email_types.js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
+    ? "https://openrouter.ai/api/v1" 
+    : undefined,
 });
 
 // ─── Hook Templates (fallbacks) ──────────────────────────────
@@ -129,7 +132,9 @@ Create content that would make a ${targetAudience} professional think:
 
   try {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
+        ? "anthropic/claude-3.5-sonnet"
+        : "claude-3-5-sonnet-latest",
       max_tokens: 2048,
       system: CAPTURE_GENERATION_PROMPT,
       messages: [{ role: "user", content: contextPrompt }],
@@ -172,7 +177,9 @@ export async function generateHookVariants(
   const variants: LeadCaptureHook[] = [];
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
+      ? "anthropic/claude-3.5-sonnet"
+      : "claude-3-5-sonnet-latest",
     max_tokens: 3000,
     system: `You are a conversion psychology expert. Generate ${count} different lead capture hook variants for the ${industry} industry, selling ${productOrService}.
 
