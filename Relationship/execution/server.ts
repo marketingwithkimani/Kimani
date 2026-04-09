@@ -193,7 +193,7 @@ app.post("/api/contact", async (req, res) => {
       company: organization || "Not Specified",
       stage: "Ready",
       capturedVia: "Contact Form",
-      interest: interest,
+      interest: interest || "General Inquiry",
       message: message
     };
 
@@ -212,6 +212,35 @@ app.post("/api/contact", async (req, res) => {
       await saveProspect(prospect as any);
     }
 
+    // Send an automatic response using 'enquiries'
+    try {
+      const responseEmailText = `Hello ${fullName},
+
+Thank you for reaching out via the Marketing with Kimani site.
+
+I have received your message regarding "${interest || 'your inquiry'}". I'll review the details you provided and get back to you personally within the next 24-48 hours.
+
+In the meantime, feel free to explore the 67% market strategy on our site if you haven't already.
+
+Best regards,
+Kimani 
+Marketing with Kimani`;
+
+      await sendEmailToProspect(
+        { email, name: fullName } as any, 
+        { 
+          subjectLine: `Re: Your inquiry about ${interest || 'Marketing with Kimani'}`,
+          body: responseEmailText,
+          closingName: "Kimani",
+          patternBreakers: ["automated_acknowledgment"],
+          estimatedReadTime: "30s"
+        } as any,
+        "enquiries"
+      );
+    } catch (emailError) {
+      console.error("Failed to send acknowledgment email:", emailError);
+    }
+
     res.json({ success: true, message: "Lead captured successfully" });
   } catch (error: any) {
     console.error("Contact save error:", error);
@@ -221,7 +250,7 @@ app.post("/api/contact", async (req, res) => {
 
 // ─── Dashboard API ───────────────────────────────────────────
 
-const DASHBOARD_PASSWORD = "0727856464"; // Simple demo password
+const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || "0727856464"; // Default demo password
 
 app.post("/api/login", (req, res) => {
   const { password } = req.body;

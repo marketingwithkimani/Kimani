@@ -8,28 +8,49 @@ import nodemailer from "nodemailer";
 import { GeneratedEmail, ProspectProfile } from "./email_types.js";
 import "dotenv/config";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "localhost",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true",
+// Configuration for Purelymail
+const SMTP_CONFIG = {
+  host: "smtp.purelymail.com",
+  port: 465,
+  secure: true, // true for 465, false for 587
   auth: {
-    user: process.env.SMTP_USER,
+    user: process.env.SMTP_USER || "automations@marketingwithkimani.co.ke",
     pass: process.env.SMTP_PASS,
   },
+};
+
+const automationsTransporter = nodemailer.createTransport(SMTP_CONFIG);
+
+// If they share the same credentials but different 'from' addresses, 
+// purelymail usually allows this if they are on the same account.
+// If they need separate auth, we'd create a second one.
+const enquiriesTransporter = nodemailer.createTransport({
+  ...SMTP_CONFIG,
+  auth: {
+    user: process.env.SMTP_ENQUIRIES_USER || "enquiries@marketingwithkimani.co.ke",
+    pass: process.env.SMTP_ENQUIRIES_PASS || process.env.SMTP_PASS,
+  }
 });
 
 /**
  * Send a generated email to a prospect.
+ * @param senderType 'automations' (default) or 'enquiries'
  */
 export async function sendEmailToProspect(
   prospect: ProspectProfile,
-  email: GeneratedEmail
+  email: GeneratedEmail,
+  senderType: 'automations' | 'enquiries' = 'automations'
 ): Promise<boolean> {
-  console.log(`\n📧 Attempting to send email to: ${prospect.email}`);
+  const transporter = senderType === 'enquiries' ? enquiriesTransporter : automationsTransporter;
+  const fromEmail = senderType === 'enquiries' 
+    ? "enquiries@marketingwithkimani.co.ke" 
+    : "automations@marketingwithkimani.co.ke";
+
+  console.log(`\n📧 Attempting to send email [via ${senderType}] to: ${prospect.email}`);
   console.log(`Subject: ${email.subjectLine}`);
 
   const mailOptions = {
-    from: `"${email.closingName}" <${process.env.SMTP_USER}>`,
+    from: `"${email.closingName || 'Kimani'}" <${fromEmail}>`,
     to: prospect.email,
     subject: email.subjectLine,
     text: email.body,
