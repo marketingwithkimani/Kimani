@@ -103,7 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent = 'Submitting...';
 
       try {
-        const response = await fetch('/api/contact', {
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002/api' : '/api';
+        const response = await fetch(`${API_BASE}/contact`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(formData)

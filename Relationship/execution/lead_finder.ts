@@ -4,6 +4,9 @@ import "dotenv/config";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
+    ? "https://openrouter.ai/api/v1" 
+    : undefined,
 });
 
 /**
@@ -17,6 +20,9 @@ export async function findPotentialLeads(
 ): Promise<ProspectProfile[]> {
   console.log(`\n🔍 AI Lead Finder: Researching ${targetRole} leads in "${industry}" market...`);
   
+  const isOpenRouter = process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1");
+  const model = isOpenRouter ? "anthropic/claude-3-haiku" : "claude-3-haiku-20240307";
+
   const prompt = `Act as an expert market intelligence analyst. 
 Generate ${count} realistic B2B leads for a marketing consultant targeting ${industry} in the African market (especially Kenya, Nigeria, South Africa).
 
@@ -46,7 +52,7 @@ Output ONLY valid JSON in this format:
     }
 
     const response = await anthropic.messages.create({
-      model: "claude-3-haiku-20240307",
+      model: model,
       max_tokens: 2000,
       system: "You are a professional market intelligence engine. Return valid JSON only.",
       messages: [{ role: "user", content: prompt }],
