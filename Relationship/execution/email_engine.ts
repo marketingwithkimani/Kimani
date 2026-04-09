@@ -20,11 +20,17 @@ import {
   CampaignPosition,
 } from "./email_types.js";
 
-// ─── Configuration ───────────────────────────────────────────
+import "dotenv/config";
+
+const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+const isOR = activeKey?.startsWith("sk-or-v1");
 
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: activeKey,
+  baseURL: isOR ? "https://openrouter.ai/api/v1" : undefined,
 });
+
+const SONNET_MODEL = isOR ? "anthropic/claude-3.5-sonnet" : "claude-3-5-sonnet-latest";
 
 // ─── Campaign Position Delays (days between emails) ──────────
 
@@ -98,7 +104,7 @@ Sender: ${input.senderName}, ${input.senderRole}`);
 
   try {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: SONNET_MODEL,
       max_tokens: 1024,
       system: STRATEGY_PROMPT,
       messages: [{ role: "user", content: contextParts.join("\n\n") }],

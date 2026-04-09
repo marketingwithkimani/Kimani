@@ -25,8 +25,9 @@ const port = process.env.PORT || 3002;
 // Persistent store fallback if Google Sheets is not configured
 import * as fs from "fs";
 import * as path from "path";
-const LEADS_FILE = path.join(process.cwd(), "leads_backup.json");
-const POTENTIAL_LEADS_FILE = path.join(process.cwd(), "potential_leads_backup.json");
+const isVercel = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
+const LEADS_FILE = isVercel ? path.join("/tmp", "leads_backup.json") : path.join(process.cwd(), "leads_backup.json");
+const POTENTIAL_LEADS_FILE = isVercel ? path.join("/tmp", "potential_leads_backup.json") : path.join(process.cwd(), "potential_leads_backup.json");
 
 function saveLeadToBackup(lead: any) {
   try {
