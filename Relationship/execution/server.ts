@@ -19,6 +19,8 @@ import { generateEmail } from "./email_engine.js";
 import { ClientProfile, ConversationMessage } from "./types.js";
 import { google } from "googleapis";
 import dotenv from "dotenv";
+import * as fs from "fs";
+import * as path from "path";
 import { resolve as resolvePath } from "path";
 
 // Explicitly resolve .env — works regardless of which directory npm start is run from
@@ -46,8 +48,6 @@ const app = express();
 const port = process.env.PORT || 3010;
 
 // Persistent store fallback if Google Sheets is not configured
-import * as fs from "fs";
-import * as path from "path";
 const isVercel = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 const LEADS_FILE = isVercel ? path.join("/tmp", "leads_backup.json") : path.join(process.cwd(), "leads_backup.json");
 const POTENTIAL_LEADS_FILE = isVercel ? path.join("/tmp", "potential_leads_backup.json") : path.join(process.cwd(), "potential_leads_backup.json");
