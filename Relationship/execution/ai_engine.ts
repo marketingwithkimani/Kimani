@@ -54,10 +54,13 @@ function getAnthropicClient() {
   return { client: new Anthropic({ apiKey: activeKey }), model: "claude-3-5-sonnet-latest" };
 }
 
-import personalityConfigRaw from "./personality_config.json";
+import * as fs from "fs";
+import * as path from "path";
 
 function loadPersonality(): PersonalityConfig {
-  return PersonalityConfig.parse(personalityConfigRaw);
+  const configPath = path.join(process.cwd(), "Relationship", "execution", "personality_config.json");
+  const raw = fs.readFileSync(configPath, "utf-8");
+  return PersonalityConfig.parse(JSON.parse(raw));
 }
 
 function buildSystemPrompt(
