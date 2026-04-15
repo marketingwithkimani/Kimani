@@ -51,6 +51,18 @@ import * as path from "path";
 const isVercel = process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
 const LEADS_FILE = isVercel ? path.join("/tmp", "leads_backup.json") : path.join(process.cwd(), "leads_backup.json");
 const POTENTIAL_LEADS_FILE = isVercel ? path.join("/tmp", "potential_leads_backup.json") : path.join(process.cwd(), "potential_leads_backup.json");
+const LOG_FILE = isVercel ? path.join("/tmp", "debug.log") : path.join(process.cwd(), "debug.log");
+
+function logToFile(message: string) {
+  const logMsg = `[${new Date().toISOString()}] ${message}\n`;
+  console.log(message);
+  try {
+    fs.appendFileSync(LOG_FILE, logMsg);
+  } catch (e) {
+    // Ignore log failures in production if /tmp is full or inaccessible
+  }
+}
+
 
 function saveLeadToBackup(lead: any) {
   try {
@@ -133,7 +145,8 @@ function getOrCreateSession(sessionId: string) {
 app.get("/ping", (req, res) => res.send("pong"));
 
 app.post("/kimani-ai-core/chat", async (req, res) => {
-  fs.appendFileSync('debug.log', `[${new Date().toISOString()}] HIT /api/rel-chat\n`);
+  logToFile(`HIT /api/rel-chat`);
+
   const { sessionId, message } = req.body;
 
   if (!sessionId || !message) {
@@ -236,8 +249,9 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
     });
 
   } catch (error: any) {
-    fs.appendFileSync('debug.log', `[${new Date().toISOString()}] ERROR: ${error.message}\n${error.stack}\n`);
+    logToFile(`ERROR: ${error.message}\n${error.stack}`);
     console.error("Chat error:", error);
+
     res.status(500).json({ error: error.message || "Internal server error" });
   }
 });
