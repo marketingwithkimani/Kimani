@@ -54,7 +54,7 @@ function getAnthropicClient() {
   return { client: new Anthropic({ apiKey: activeKey }), model: "claude-3-5-sonnet-latest" };
 }
 
-import personalityConfigRaw from "./personality_config.json" assert { type: "json" };
+import personalityConfigRaw from "./personality_config.json";
 
 function loadPersonality(): PersonalityConfig {
   return PersonalityConfig.parse(personalityConfigRaw);
