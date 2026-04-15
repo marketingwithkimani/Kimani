@@ -40,7 +40,8 @@ export const EmotionalState = z.enum([
   "sad",
   "stressed",
   "hopeful",
-  "skeptical",
+  "curious",
+  "interested",
 ]);
 export type EmotionalState = z.infer<typeof EmotionalState>;
 
@@ -97,6 +98,9 @@ export const ClientProfile = z.object({
   ).default([]),
   lastContactDate: z.string().optional(),
   conversationCount: z.number().default(0),
+  messageCount: z.number().default(0),
+  disclosureLevel: z.number().default(0),
+  country: z.string().optional(),
   notes: z.string().default(""),
 });
 export type ClientProfile = z.infer<typeof ClientProfile>;
@@ -121,7 +125,13 @@ export const PersonalityConfig = z.object({
     "calm_strategist",
     "friendly_guide",
     "insightful_analyst",
+    "trust_driven_strategist",
   ]),
+  bio: z.string().optional(),
+  credentials: z.array(z.string()).optional(),
+  differentiators: z.array(z.string()).optional(),
+  contactEmail: z.string().optional(),
+  website: z.string().optional(),
 });
 export type PersonalityConfig = z.infer<typeof PersonalityConfig>;
 
@@ -138,6 +148,8 @@ export const AIEngineOutput = z.object({
   response: z.string(),
   intentAnalysis: IntentAnalysis,
   variabilityDirective: VariabilityDirective,
+  discoverySummary: z.string().optional(),
+  suggestedNextAction: z.string().optional(),
   memoryUpdates: z.record(z.unknown()).optional(),
   scheduledFollowUps: z.array(
     z.object({
@@ -148,3 +160,19 @@ export const AIEngineOutput = z.object({
   ).default([]),
 });
 export type AIEngineOutput = z.infer<typeof AIEngineOutput>;
+
+// ─── Dashboard Lead Entity ────────────────────────────────────
+export interface DashboardLead {
+  sessionId: string;
+  name: string;
+  company: string;
+  profession: string;
+  country: string;
+  stage: IntentStage;
+  intentScore: number;
+  discoverySummary: string;
+  suggestedNextAction: string;
+  fullConversation: ConversationMessage[];
+  lastInteraction: string;
+  capturedVia: string;
+}

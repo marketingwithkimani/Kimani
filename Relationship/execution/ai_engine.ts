@@ -1,15 +1,8 @@
 /**
- * AI Engine — Core Dual-Brain Engine
- *
- * Processes inbound messages through the full pipeline:
- * 1. Combines personality + memory + intent guidance + variability mode
- * 2. Builds a dynamic system prompt for Claude
- * 3. Returns the Relationship Brain's response
- *
- * This is the heart of the system.
+ * AI Engine - Core Dual-Brain Engine
  */
-
 import Anthropic from "@anthropic-ai/sdk";
+import axios from "axios";
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -23,27 +16,49 @@ import {
 } from "./types.js";
 import { MomentumState } from "./momentum_engine.js";
 
-// ─── Configuration ───────────────────────────────────────────
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
-
-const anthropic = new Anthropic({
-  apiKey: activeKey,
-  baseURL: activeKey?.startsWith("sk-or-v1") 
-    ? "https://openrouter.ai/api/v1" 
-    : undefined,
-});
+function getAnthropicClient() {
+  const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+  const isOR = activeKey?.startsWith("sk-or-v1");
+  if (isOR) {
+    return {
+      client: {
+        messages: {
+          create: async (params: any) => {
+            const messagesWithSystem = [
+              ...(params.system ? [{ role: "system", content: params.system }] : []),
+              ...params.messages.map((m: any) => ({ role: m.role, content: m.content }))
+            ];
+            const response = await axios.post("https://openrouter.ai/api/v1/chat/completions", {
+              model: "anthropic/claude-3.5-haiku",
+              messages: messagesWithSystem,
+              max_tokens: params.max_tokens,
+            }, {
+              headers: {
+                "Authorization": "Bearer " + activeKey,
+                "HTTP-Referer": "https://marketingwithkimani.co.ke",
+                "X-Title": "Marketing with Kimani",
+                "Content-Type": "application/json",
+              },
+            });
+            const choice = response.data.choices[0];
+            return { content: [{ type: "text", text: choice.message.content }] };
+          }
+        }
+      } as any,
+      model: "anthropic/claude-3.5-haiku",
+    };
+  }
+  return { client: new Anthropic({ apiKey: activeKey }), model: "claude-3-5-sonnet-latest" };
+}
 
 function loadPersonality(): PersonalityConfig {
   const configPath = path.join(__dirname, "personality_config.json");
   const raw = fs.readFileSync(configPath, "utf-8");
   return PersonalityConfig.parse(JSON.parse(raw));
 }
-
-// ─── System Prompt Builder ───────────────────────────────────
 
 function buildSystemPrompt(
   personality: PersonalityConfig,
@@ -54,116 +69,47 @@ function buildSystemPrompt(
 ): string {
   const parts: string[] = [];
 
-  // ── Identity & Core Behavior ──
-  parts.push(`You are ${personality.name}, a relationship manager and trusted advisor.
+  // 1. THE SYSTEM OVERRIDE - BREVITY & RHYTHM
+  const countryContext = clientProfile?.country ? `USER IS IN: ${clientProfile.country}. Adapt tone (KE: use "kidogo" / NG: be high-energy).` : "";
+  
+  parts.push(`NON-NEGOTIABLE OVERRIDE:
+- MAX 2 LINES PER BUBBLE. MAX 4 BUBBLES.
+- USE [BURST] TO SPLIT.
+- 70% Discovery / 30% Soft Pitch.
+- ZERO BULLET POINTS. ZERO LISTS.
 
-CORE IDENTITY:
-You are an advisor representing **Marketing with Kimani** (The African Marketing Authority).
+MANDATORY FLOW:
+1. React: "hmm...", "yeah...", "honestly...".
+2. Reflect: Mirror their situation.
+3. Insight: Give a 1-line perspective drop.
+4. (Optional) Pitch: ONE LINE: "That's something I help with."
+5. Ask: ONE sharp discovery question.
 
-BUSINESS PHILOSOPHY:
-- We focus on **"The 67%"** — the majority of the market who are not buying today but are observing. We build trust with them through human psychology and long-term value, rather than fighting over the 3% ready to buy now.
-- Your goal is to turn observers into loyal clients through patience and genuine relationship building.
-- POTENTIAL CLIENT CONTEXT: Anyone starting a conversation with you is a potential client looking for professional marketing strategy or business growth. You represent Kimani, and your work is to guide them toward the most effective way to grow their business through Kimani's services.
-- SERVICES OFFERED: 
-  * Corporate Strategy (high-level growth and alignment)
-  * 1 on 1 Coaching (direct strategic partnership)
-  * Relationship Engine (AI-powered nurturing systems)
-  * Brand Positioning (defining unique market value)
-  * Market Intelligence (deep market research and understanding)
+STYLE:
+- Simple English. Sound like a person texting, not a consultant.
+- Use ONLY: 🙂, 😅, 👀, 🤔, 👋🏾. Max 1 per response.
+- ${countryContext}`);
 
-Always respond as a professional, high-level advisor. Treat the user as a respected potential client.
+  // 2. MISSION
+  parts.push(`MISSION:
+Kimani. Focus on trust-driven strategies for the 67% (African market).
+Bio/Facts: ${personality.bio ?? ""}`);
 
-GREETING TRIGGER: 
-If you receive the hidden message '[CLIENT_LANDED_ON_PAGE]', it means a potential client has just landed on your page. Do not acknowledge the code. Instead, provide a fresh, human, and trust-driven greeting. Observe their arrival and invite them into a conversation that acknowledges the depth of their business journey.
+  // 4. STRATEGIST SCRATCHPAD (Hidden metadata)
+  parts.push(`SCRATCHPAD DIRECTIVE:
+At the end of your response, you MUST include a hidden update block for the dashboard.
+Format:
+<discovery_update>
+[1-sentence summary of what you discovered about their business/needs so far]
+</discovery_update>
+<suggested_action>
+[1-sentence strategic advice for Kimani on how to handle this lead manually]
+</suggested_action>`);
 
-Your personality:
-- Curiosity level: ${personality.curiosityLevel}/10
-- Humor: ${personality.humorStyle}
-- Energy: ${personality.energy}
-- Empathy: ${personality.empathyLevel}/10
-- Style: ${personality.advisoryStyle.replace(/_/g, " ")}
-
-ABSOLUTE RULES:
-- Never mention you are an AI, a system, or have internal analysis
-- Never over-validate ("I completely understand how you feel")
-- Never use corporate language or marketing speak
-- Never push products/services unless the person is clearly ready
-- Never generate consistently structured paragraphs
-- Vary your response length dramatically — sometimes one word, sometimes a paragraph
-- Prioritize the relationship over any conversion`);
-
-  // ── Client Memory Context ──
-  if (clientProfile && clientProfile.name) {
-    const memoryParts: string[] = [];
-    memoryParts.push(`\nCLIENT CONTEXT (use naturally, never recite):
-Name: ${clientProfile.name}`);
-
-    if (clientProfile.profession) memoryParts.push(`Profession: ${clientProfile.profession}`);
-    if (clientProfile.goals.length > 0) memoryParts.push(`Goals: ${clientProfile.goals.join(", ")}`);
-    if (clientProfile.challenges.length > 0) memoryParts.push(`Challenges: ${clientProfile.challenges.join(", ")}`);
-    if (clientProfile.interests.length > 0) memoryParts.push(`Interests: ${clientProfile.interests.join(", ")}`);
-    if (clientProfile.familyReferences.length > 0) memoryParts.push(`Family: ${clientProfile.familyReferences.join(", ")}`);
-    if (clientProfile.notes) memoryParts.push(`Notes: ${clientProfile.notes}`);
-
-    // Timeline events for contextual follow-ups
-    const pendingEvents = clientProfile.timelineEvents.filter((e) => !e.followedUp);
-    if (pendingEvents.length > 0) {
-      memoryParts.push(
-        `Upcoming events to potentially reference naturally:\n${pendingEvents
-          .map((e) => `- ${e.event} (around ${e.approximateDate})`)
-          .join("\n")}`
-      );
-    }
-
-    parts.push(memoryParts.join("\n"));
-  } else {
-    parts.push(`\nCLIENT CONTEXT: This is a new client. You know nothing about them yet. Start by being curious and getting to know them naturally.`);
-  }
-
-  // ── Sales Intelligence Guidance (hidden from client) ──
-  parts.push(`\nINTERNAL GUIDANCE (never reveal to client):
-Intent Score: ${intentAnalysis.intentScore}/100
-Stage: ${intentAnalysis.stage}
-Emotional State: ${intentAnalysis.emotion}
-Decision Readiness: ${intentAnalysis.decisionReadiness}/100
-Knowledge Level: ${intentAnalysis.knowledgeLevel}
-Suggested Move: ${intentAnalysis.suggestedMove}
-Avoid: ${intentAnalysis.avoid}
-${intentAnalysis.buyingSignals.length > 0 ? `Buying Signals Detected: ${intentAnalysis.buyingSignals.join(", ")}` : "No buying signals detected."}`);
-
-  // ── Variability Instructions ──
-  parts.push(`\nRESPONSE STYLE FOR THIS MESSAGE:
-Mode: ${variability.mode}
-${getModeInstruction(variability.mode)}
-Length: ${variability.lengthGuidance}
-Tone: ${variability.toneShift}`);
-
-  // ── Pattern Breakers ──
-  if (variability.patternBreakers.length > 0) {
-    parts.push(`\nPATTERN BREAKERS — consider naturally incorporating:
-${variability.patternBreakers.map((b) => `- ${b}`).join("\n")}`);
-  }
-
-  // ── Conversation Momentum ──
-  if (momentum) {
-    parts.push(`\nCONVERSATION MOMENTUM:
-Engagement Score: ${momentum.score}/100
-Trend: ${momentum.trend}
-Energy Recommendation: ${momentum.energyRecommendation}
-Guidance: ${momentum.guidance}`);
-  }
-
-  // ── Memory Extraction Instructions ──
-  parts.push(`\nMEMORY EXTRACTION:
-After your response, on a new line, output a JSON block wrapped in <memory_update> tags containing any new information learned about the client in this message. Only include fields that have new information.
-
-Example:
-<memory_update>
-{"name": "Sarah", "profession": "teacher", "goals": ["save for retirement"], "timelineEvents": [{"event": "moving to Portland", "approximateDate": "July 2026", "followedUp": false}]}
-</memory_update>
-
-If no new information was learned, output:
-<memory_update>{}</memory_update>`);
+  // 5. FINAL BEHAVIORAL ANCHOR
+  parts.push(`FINAL LAW: Use [BURST] for 2-5 bubbles. React -> Mirror -> Amplify -> [Earned Pitch] -> Ask. 
+NEVER talk at them. ALWAYS talk WITH them. 
+If it feels like an answer -> REWRITE as a strategist's insight.`);
 
   return parts.join("\n\n");
 }
@@ -176,13 +122,13 @@ function getModeInstruction(mode: string): string {
     curious:
       "Ask instead of answering. Lead with a question. Be genuinely curious about their situation.",
     reflective:
-      "Mirror their idea back to them. Show you understand without over-explaining. ('Sounds like you're trying to…')",
+      "Mirror their idea back to them. Show you understand without over-explaining. ('Sounds like you're trying to...')",
     observational:
-      "Make a human observation about the situation. ('Funny enough, most people start thinking about this around…')",
+      "Make a human observation about the situation. ('Funny enough, most people start thinking about this around...')",
     analytical:
-      "Give structured insight, but keep it conversational. ('There are usually two ways people approach this…') Use sparingly.",
+      "Give structured insight, but keep it conversational. ('There are usually two ways people approach this...') Use sparingly.",
     personal_advisor:
-      "Frame things from a personal perspective. ('If I were thinking through this myself, I'd probably…')",
+      "Frame things from a personal perspective. ('If I were thinking through this myself, I'd probably...')",
     casual_commentary:
       "Light, informal tone. ('Honestly, this part confuses a lot of people.')",
     minimal:
@@ -193,7 +139,7 @@ function getModeInstruction(mode: string): string {
   return instructions[mode] || "";
 }
 
-// ─── Public API ──────────────────────────────────────────────
+// --- Public API ---
 
 /**
  * Generate a response from the Relationship Brain.
@@ -210,7 +156,19 @@ export async function generateResponse(
   memoryUpdates: Record<string, unknown>;
   scheduledFollowUps: AIEngineOutput["scheduledFollowUps"];
 }> {
+  // HARD-PINNED GREETING: Ensure the first impression is flawless
+  if (message === "[CLIENT_LANDED_ON_PAGE]") {
+    return {
+      response: "hey, welcome 👋🏾 [BURST] quick one — what are you trying to improve in your business right now? [BURST] and where are you based?",
+      intentAnalysis,
+      variabilityDirective: variability,
+      memoryUpdates: {},
+      scheduledFollowUps: [],
+    };
+  }
+
   const personality = loadPersonality();
+  const { client: anthropic, model } = getAnthropicClient();
 
   const systemPrompt = buildSystemPrompt(
     personality,
@@ -239,10 +197,8 @@ export async function generateResponse(
 
   try {
     const response = await anthropic.messages.create({
-      model: activeKey?.startsWith("sk-or-v1")
-        ? "anthropic/claude-3.5-sonnet"
-        : "claude-3-5-sonnet-latest",
-      max_tokens: 2048,
+      model,
+      max_tokens: 280,
       system: systemPrompt,
       messages,
     });
@@ -259,14 +215,29 @@ export async function generateResponse(
       try {
         memoryUpdates = JSON.parse(memoryMatch[1].trim());
       } catch {
-        // Ignore parse errors — memory extraction is best-effort
+        // Ignore parse errors - memory extraction is best-effort
       }
     }
 
-    // Extract the actual response (everything before <memory_update>)
+    // Extract Hidden Metadata
+    const discoveryMatch = fullText.match(/<discovery_update>([\s\S]*?)<\/discovery_update>/);
+    const discoverySummary = discoveryMatch ? discoveryMatch[1].trim() : "";
+
+    const actionMatch = fullText.match(/<suggested_action>([\s\S]*?)<\/suggested_action>/);
+    const suggestedNextAction = actionMatch ? actionMatch[1].trim() : "";
+
+    // Extract the actual response (everything before metadata tags)
     let responseText = fullText
       .replace(/<memory_update>[\s\S]*?<\/memory_update>/, "")
+      .replace(/<discovery_update>[\s\S]*?<\/discovery_update>/, "")
+      .replace(/<suggested_action>[\s\S]*?<\/suggested_action>/, "")
       .trim();
+
+    // SERVER-SIDE SAFETY NET: Limit to 5 bursts
+    const bursts = responseText.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
+    if (bursts.length > 5) {
+      responseText = bursts.slice(0, 5).join(" [BURST] ").trim();
+    }
 
     // Detect scheduled follow-ups from timeline events in memory
     const scheduledFollowUps: AIEngineOutput["scheduledFollowUps"] = [];
@@ -284,6 +255,8 @@ export async function generateResponse(
 
     return {
       response: responseText,
+      discoverySummary,
+      suggestedNextAction,
       memoryUpdates,
       scheduledFollowUps,
     };

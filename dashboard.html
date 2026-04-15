@@ -45,6 +45,9 @@
       max-width: 440px;
       text-align: center;
       animation: fadeInUp 0.8s ease;
+      position: relative;
+      z-index: 10;
+      pointer-events: auto !important;
     }
 
     .login-logo {
@@ -233,6 +236,35 @@
       margin-top: 4px;
     }
 
+    .btn {
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      font-weight: 00;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      pointer-events: auto !important;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+
+    .btn-primary {
+      background: #c8f230; /* var(--clr-accent) */
+      color: #000;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -344,15 +376,44 @@
     </div>
   </main>
 
-  <script>
-    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002/api' : '/api';
-    
-    // Auth Check
-    if (localStorage.getItem('kimani_token')) {
-      showDashboard();
-    }
+  <!-- DETAIL MODAL -->
+  <div id="leadModal" style="display:none; position:fixed; inset:0; z-index:10000; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px); align-items:center; justify-content:center; padding: 2rem;">
+    <div class="panel" style="max-width: 800px; width:100%; max-height: 90vh; overflow-y:auto; position:relative; box-shadow: 0 0 50px rgba(0,0,0,1);">
+      <button onclick="closeModal()" style="position:absolute; top:1.5rem; right:1.5rem; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+      <div id="modalContent">
+        <!-- Injected -->
+      </div>
+    </div>
+  </div>
 
-    document.getElementById('loginBtn').addEventListener('click', async () => {
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      console.log("Strategy Brain Dashboard Initialized.");
+
+      // Resilient API discovery
+      const getApiBase = () => {
+        const hostname = window.location.hostname;
+        const isLocal = hostname === 'localhost' || 
+                        hostname === '127.0.0.1' || 
+                        hostname.startsWith('192.168.') ||
+                        hostname.startsWith('10.') ||
+                        hostname.startsWith('172.');
+        
+        if (isLocal) {
+          return `http://${hostname}:3010/api`;
+        }
+        return '/api';
+      };
+
+      window.API_BASE = getApiBase();
+      
+      // Auth Check
+      const token = localStorage.getItem('kimani_token');
+      if (token) {
+        setTimeout(showDashboard, 100);
+      }
+
+      document.getElementById('loginBtn').addEventListener('click', async () => {
       const btn = document.getElementById('loginBtn');
       const password = document.getElementById('passCode').value;
       const error = document.getElementById('loginError');
@@ -367,8 +428,13 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password })
-        });
+        }).catch(err => { throw new Error("Network/CORS Error: " + err.message); });
         
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({ error: "Invalid Response from Server" }));
+          throw new Error(errData.error || `HTTP ${res.status}`);
+        }
+
         const data = await res.json();
         if (data.success) {
           localStorage.setItem('kimani_token', data.token);
@@ -381,7 +447,8 @@
         }
       } catch (err) {
         console.error("Login connection failed:", err);
-        error.textContent = "The Strategy Brain is unreachable at " + API_BASE + ". Ensure the Node.js server is active.";
+        alert("🚨 CONNECTION FAILED!\n\nTarget: " + API_BASE + "/login\nError: " + err.message + "\n\nTip: Ensure the Strategy Brain server is running on port 3010.");
+        error.textContent = "Connection Error: " + err.message;
         error.style.display = 'block';
         btn.textContent = "Enter Command Center";
         btn.disabled = false;
@@ -413,17 +480,17 @@
 
       // Load Leads
       const leadsRes = await fetch(`${API_BASE}/dashboard/leads`);
-      const leads = await leadsRes.json();
+      window.dashboardLeads = await leadsRes.json();
       const leadsTbody = document.querySelector('#leadsTable tbody');
-      leadsTbody.innerHTML = leads.map(l => `
-        <tr>
+      leadsTbody.innerHTML = window.dashboardLeads.map((l, i) => `
+        <tr onclick="openLeadModal(${i})" style="cursor:pointer">
           <td>
             <div style="font-weight:600">${l.name}</div>
-            <div style="font-size:0.75rem; color:var(--clr-muted)">${l.email}</div>
+            <div style="font-size:0.75rem; color:var(--clr-muted)">${l.profession}</div>
           </td>
           <td>${l.company}</td>
-          <td><span class="badge-stage ${l.stage === 'Ready' ? 'stage-ready' : 'stage-curious'}">${l.stage}</span></td>
-          <td style="color:var(--clr-muted)">${l.capturedVia}</td>
+          <td><span class="badge-stage ${l.intentScore > 50 ? 'stage-ready' : 'stage-curious'}">${l.stage}</span></td>
+          <td style="color:var(--clr-muted)">${l.country || 'N/A'}</td>
         </tr>
       `).join('');
 
@@ -432,17 +499,69 @@
       const potentials = await potRes.json();
       const queue = document.getElementById('potentialQueue');
       queue.innerHTML = potentials.map(p => `
-        <div class="activity-item">
-          <div class="ai-action-dot"></div>
-          <div>
-            <div style="font-weight:600; font-size: 0.95rem;">${p.company}</div>
-            <div style="font-size:0.8rem; color:var(--clr-accent); margin-top:0.2rem">AI Goal: ${p.strategy}</div>
-            <div style="font-size:0.75rem; color:var(--clr-muted); margin-top:0.2rem">Queue Status: ${p.status}</div>
+        <div class="activity-item" style="flex-direction: column; align-items: flex-start; gap: 0.5rem;">
+          <div style="display: flex; gap: 1rem; width: 100%;">
+            <div class="ai-action-dot"></div>
+            <div style="flex: 1;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight:600; font-size: 1rem;">${p.company}</div>
+                <div style="font-size: 0.7rem; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">${p.location || 'Africa'}</div>
+              </div>
+              <div style="font-size:0.8rem; color:var(--clr-accent); margin-top:0.2rem">${p.strategy}</div>
+            </div>
           </div>
+          <div style="font-size: 0.75rem; color: var(--clr-muted); background: rgba(255,255,255,0.02); padding: 0.8rem; border-radius: 8px; width: 100%; border: 1px dashed var(--clr-border);">
+            <strong>A.I. Discovery:</strong> ${p.discovery || 'Market intelligence gathering...'}
+          </div>
+          <button onclick="sendLeadEmail('${p.id}', '${p.industry}')" class="btn btn-primary" style="width: 100%; font-size: 0.75rem; padding: 0.5rem; margin-top: 0.5rem;">
+            Initiate AI Outreach Sequence
+          </button>
         </div>
       `).join('');
     }
 
+    function openLeadModal(index) {
+      const lead = window.dashboardLeads[index];
+      const content = document.getElementById('modalContent');
+      
+      content.innerHTML = `
+        <h3 style="margin-bottom:0.5rem">${lead.name}</h3>
+        <p style="color:var(--clr-muted); margin-bottom: 2rem;">${lead.profession} @ ${lead.company} | ${lead.country}</p>
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+          <div style="padding: 1.5rem; background: rgba(200, 242, 48, 0.05); border-radius: 20px; border: 1px solid var(--clr-accent);">
+            <h5 style="color:var(--clr-accent); margin-bottom:0.5rem">A.I. Discovery</h5>
+            <p style="font-size:0.9rem">${lead.discoverySummary || 'Establishing rapport...'}</p>
+          </div>
+          <div style="padding: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 20px; border: 1px solid var(--clr-border);">
+            <h5 style="color:#0096ff; margin-bottom:0.5rem">Suggested Next Action</h5>
+            <p style="font-size:0.9rem">${lead.suggestedNextAction || 'Continue discovery via AI engine.'}</p>
+          </div>
+        </div>
+
+        <h5 style="margin-bottom:1rem">Conversation Log</h5>
+        <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 20px; max-height: 300px; overflow-y: auto;">
+          ${(lead.fullConversation || []).map(m => `
+            <div style="margin-bottom: 1rem; text-align: ${m.role === 'user' ? 'right' : 'left'}">
+              <span style="display:inline-block; padding: 0.8rem 1.2rem; border-radius: 12px; font-size: 0.85rem; background: ${m.role === 'user' ? 'var(--clr-accent)' : 'rgba(255,255,255,0.1)'}; color: ${m.role === 'user' ? '#000' : '#fff'}">
+                ${m.content}
+              </span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div style="margin-top: 2.5rem; display: flex; gap: 1rem;">
+          <button onclick="sendLeadEmail('${lead.sessionId}', '${lead.profession}')" class="btn btn-primary" style="flex:1">Initialize AI Sequence</button>
+          <button onclick="closeModal()" class="btn" style="border: 1px solid var(--clr-border)">Close Details</button>
+        </div>
+      `;
+      
+      document.getElementById('leadModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('leadModal').style.display = 'none';
+    }
     function switchTab(tab) {
       document.querySelectorAll('.content-tab').forEach(t => t.style.display = 'none');
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -530,6 +649,7 @@
         alert("Server error.");
       }
     }
+  }); // End DOMContentLoaded
   </script>
 </body>
 </html>

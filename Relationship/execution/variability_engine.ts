@@ -97,7 +97,7 @@ const EMOTIONAL_ECHOES: Record<string, string[]> = {
 
 // ─── Length Guidance ──────────────────────────────────────────
 
-const LENGTH_PATTERNS = ["minimal", "short", "medium", "short", "long", "short", "minimal", "medium"] as const;
+const LENGTH_PATTERNS = ["minimal", "short", "medium", "short", "short", "short", "minimal", "medium"] as const;
 
 // ─── Internal State ──────────────────────────────────────────
 

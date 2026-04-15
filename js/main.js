@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent = 'Submitting...';
 
       try {
-        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002/api' : '/api';
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3010/api' : '/api';
         const response = await fetch(`${API_BASE}/contact`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -115,8 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (response.ok) {
           btn.style.display = 'none';
           if (msg) {
+            msg.textContent = data.message || "Thank you. I'll be in touch shortly.";
             msg.style.display = 'block';
-            msg.style.textContent = data.message || "Thank you. I'll be in touch shortly.";
             msg.style.animation = 'fadeInUp 0.5s ease';
           }
           form.reset();

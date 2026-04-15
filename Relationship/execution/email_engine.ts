@@ -21,16 +21,62 @@ import {
 } from "./email_types.js";
 
 import "dotenv/config";
+import axios from "axios";
 
-const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
-const isOR = activeKey?.startsWith("sk-or-v1");
+// ─── Lazy Client Factory ─────────────────────────────────────
+function getAnthropicClient() {
+  const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+  const isOR = activeKey?.startsWith("sk-or-v1");
+  
+  if (isOR) {
+    return {
+      client: {
+        messages: {
+          create: async (params: any) => {
+            const response = await axios.post(
+              "https://openrouter.ai/api/v1/chat/completions",
+              {
+                model: "anthropic/claude-sonnet-4.6",
+                messages: params.messages.map((m: any) => ({
+                  role: m.role,
+                  content: m.content
+                })),
+                system: params.system,
+                max_tokens: params.max_tokens,
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${activeKey}`,
+                  "HTTP-Referer": "https://marketingwithkimani.co.ke",
+                  "X-Title": "Marketing with Kimani",
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            
+            const choice = response.data.choices[0];
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: choice.message.content
+                }
+              ]
+            };
+          }
+        }
+      } as any,
+      model: "anthropic/claude-sonnet-4.6",
+    };
+  }
 
-const anthropic = new Anthropic({
-  apiKey: activeKey,
-  baseURL: isOR ? "https://openrouter.ai/api/v1" : undefined,
-});
-
-const SONNET_MODEL = isOR ? "anthropic/claude-3.5-sonnet" : "claude-3-5-sonnet-latest";
+  return {
+    client: new Anthropic({
+      apiKey: activeKey,
+    }),
+    model: "claude-3-5-sonnet-latest",
+  };
+}
 
 // ─── Campaign Position Delays (days between emails) ──────────
 
@@ -103,8 +149,9 @@ Sender: ${input.senderName}, ${input.senderRole}`);
   }
 
   try {
+    const { client: anthropic, model } = getAnthropicClient();
     const response = await anthropic.messages.create({
-      model: SONNET_MODEL,
+      model: model,
       max_tokens: 1024,
       system: STRATEGY_PROMPT,
       messages: [{ role: "user", content: contextParts.join("\n\n") }],
@@ -279,9 +326,10 @@ export async function generateEmail(
   // Step 2: Relationship Brain — write the email
   console.log("Relationship Brain: writing email...");
   const writerPrompt = buildEmailWriterPrompt(strategy, input);
+  const { client: anthropic, model } = getAnthropicClient();
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: model,
     max_tokens: 2048,
     system: writerPrompt,
     messages: [

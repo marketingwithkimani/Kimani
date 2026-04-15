@@ -11,16 +11,67 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
+import axios from "axios";
+import "dotenv/config";
 import { LeadCaptureHook, LeadCapturePage } from "./email_types.js";
 
 // ─── Configuration ───────────────────────────────────────────
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
-    ? "https://openrouter.ai/api/v1" 
-    : undefined,
-});
+// ─── Lazy Client Factory ─────────────────────────────────────
+function getAnthropicClient() {
+  const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+  const isOR = activeKey?.startsWith("sk-or-v1");
+  
+  if (isOR) {
+    return {
+      client: {
+        messages: {
+          create: async (params: any) => {
+            const response = await axios.post(
+              "https://openrouter.ai/api/v1/chat/completions",
+              {
+                model: "anthropic/claude-sonnet-4.6",
+                messages: params.messages.map((m: any) => ({
+                  role: m.role,
+                  content: m.content
+                })),
+                system: params.system,
+                max_tokens: params.max_tokens,
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${activeKey}`,
+                  "HTTP-Referer": "https://marketingwithkimani.co.ke",
+                  "X-Title": "Marketing with Kimani",
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            
+            const choice = response.data.choices[0];
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: choice.message.content
+                }
+              ]
+            };
+          }
+        }
+      } as any,
+      model: "anthropic/claude-sonnet-4.6",
+    };
+  }
+
+  return {
+    client: new Anthropic({
+      apiKey: activeKey,
+    }),
+    model: "claude-3-5-sonnet-latest",
+  };
+}
+
 
 // ─── Hook Templates (fallbacks) ──────────────────────────────
 
@@ -131,10 +182,9 @@ Create content that would make a ${targetAudience} professional think:
 3. "This might actually be useful"`;
 
   try {
+    const { client: anthropic, model } = getAnthropicClient();
     const response = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
-        ? "anthropic/claude-3.5-sonnet"
-        : "claude-3-5-sonnet-latest",
+      model: model,
       max_tokens: 2048,
       system: CAPTURE_GENERATION_PROMPT,
       messages: [{ role: "user", content: contextPrompt }],
@@ -176,10 +226,9 @@ export async function generateHookVariants(
   const hookTypes = ["assumption_challenge", "hidden_problem", "counterintuitive", "curiosity_gap"] as const;
   const variants: LeadCaptureHook[] = [];
 
+  const { client: anthropic, model } = getAnthropicClient();
   const response = await anthropic.messages.create({
-    model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
-      ? "anthropic/claude-3.5-sonnet"
-      : "claude-3-5-sonnet-latest",
+    model: model,
     max_tokens: 3000,
     system: `You are a conversion psychology expert. Generate ${count} different lead capture hook variants for the ${industry} industry, selling ${productOrService}.
 

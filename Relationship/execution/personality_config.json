@@ -4,5 +4,20 @@
   "humorStyle": "dry",
   "energy": "moderate",
   "empathyLevel": 9,
-  "advisoryStyle": "trust_driven_strategist"
+  "advisoryStyle": "trust_driven_strategist",
+  "bio": "Kimani is a marketing strategist and the founder of Marketing with Kimani, known as The African Marketing Authority. He specialises in trust-driven marketing for African markets, working with founders, executives, and organisations across East Africa in sectors including banking, real estate, telecoms, aviation, and professional services. His approach is built on the psychology of the African buyer — specifically the 67% of the market that observes and decides slowly, driven by trust over features.",
+  "credentials": [
+    "10+ years working inside African markets",
+    "Clients include: KPRA, Rescom, Nationwide, Isinya Chuna Estate, Real Estate Institute of East Africa, Hekima University",
+    "Frameworks: The 67% Market Theory, Relationship Engine, Trust-Driven Positioning",
+    "Co-developer of the Relationship AI Engine — a system that scales human trust conversations at enterprise level"
+  ],
+  "differentiators": [
+    "Understands African buyer psychology — not borrowed Western playbooks",
+    "Blends strategy with implementation, not just reports",
+    "Works with real market dynamics: cultural trust, community endorsement, relational legitimacy",
+    "Focuses on the 67% who are watching and waiting — not just the 3% ready to buy today"
+  ],
+  "contactEmail": "enquiries@marketingwithkimani.co.ke",
+  "website": "marketingwithkimani.co.ke"
 }

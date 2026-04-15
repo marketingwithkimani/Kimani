@@ -457,7 +457,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
   
-  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3002/api' : '/api';
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3010'
+    : '';
   const sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
   
   // ─── INITIALIZE AI BRAIN GREETING ───
@@ -469,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.appendChild(typingDiv);
     
     try {
-      const response = await fetch(`${API_BASE}/chat`, {
+      const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: "[CLIENT_LANDED_ON_PAGE]" })
@@ -514,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     try {
-      const response = await fetch(`${API_BASE}/chat`, {
+      const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message: text })
@@ -523,7 +525,24 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       chatMessages.removeChild(typingDiv);
 
-      if (data.response) {
+      if (data.bursts && Array.isArray(data.bursts)) {
+        // Handle Burst Mode: multiple bubbles with delay
+        for (let i = 0; i < data.bursts.length; i++) {
+          addMessage('assistant', data.bursts[i]);
+          
+          // If not the last burst, show typing indicator for the next one
+          if (i < data.bursts.length - 1) {
+            const burstTyping = document.createElement('div');
+            burstTyping.className = 'message assistant typing';
+            burstTyping.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+            chatMessages.appendChild(burstTyping);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            await new Promise(resolve => setTimeout(resolve, 800)); // Delay between bursts
+            chatMessages.removeChild(burstTyping);
+          }
+        }
+      } else if (data.response) {
         addMessage('assistant', data.response);
       } else {
         addMessage('assistant', "I'm having a bit of trouble connecting to my brain right now. But I'm still listening.");

@@ -8,6 +8,10 @@ token.json
 
 # Intermediate files (always regenerated)
 .tmp/
+*.json
+leads_backup.json
+potential_leads_backup.json
+memory/
 
 # OS files
 Thumbs.db

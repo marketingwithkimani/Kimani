@@ -7,6 +7,9 @@ token.json
 # Dependencies
 node_modules/
 Relationship/node_modules/
+*.json
+leads_backup.json
+potential_leads_backup.json
 
 # IDE & OS
 .vscode/

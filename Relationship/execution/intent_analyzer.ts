@@ -7,6 +7,8 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
+import axios from "axios";
+import "dotenv/config";
 import {
   IntentAnalysis,
   ClientProfile,
@@ -15,12 +17,66 @@ import {
 
 // ─── Configuration ───────────────────────────────────────────
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-  baseURL: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1") 
-    ? "https://openrouter.ai/api/v1" 
-    : undefined,
-});
+// ─── Lazy Client Factory ─────────────────────────────────────
+// IMPORTANT: Must NOT be top-level — dotenv loads AFTER module imports in ESM.
+function getAnthropicClient() {
+  const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+  const isOR = activeKey?.startsWith("sk-or-v1");
+  
+  if (isOR) {
+    return {
+      client: {
+        messages: {
+          create: async (params: any) => {
+            // OpenRouter uses OpenAI format: system must be first message with role "system"
+            const messagesWithSystem = [
+              ...(params.system ? [{ role: "system", content: params.system }] : []),
+              ...params.messages.map((m: any) => ({
+                role: m.role,
+                content: m.content
+              }))
+            ];
+
+            const response = await axios.post(
+              "https://openrouter.ai/api/v1/chat/completions",
+              {
+                model: "anthropic/claude-3-haiku",
+                messages: messagesWithSystem,
+                max_tokens: params.max_tokens,
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${activeKey}`,
+                  "HTTP-Referer": "https://marketingwithkimani.co.ke",
+                  "X-Title": "Marketing with Kimani",
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            
+            const choice = response.data.choices[0];
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: choice.message.content
+                }
+              ]
+            };
+          }
+        }
+      } as any,
+      model: "anthropic/claude-3-haiku",
+    };
+  }
+
+  return {
+    client: new Anthropic({
+      apiKey: activeKey,
+    }),
+    model: "claude-3-5-sonnet-latest",
+  };
+}
 
 const INTENT_ANALYSIS_PROMPT = `You are the Sales Intelligence Brain of a Relationship AI system.
 
@@ -38,7 +94,9 @@ Analyze for:
 
 Consider the full conversation history and client profile for context.
 
-Respond ONLY with valid JSON matching this exact structure:
+Respond ONLY with valid JSON matching this exact structure.
+DO NOT wrap the response in markdown code blocks or triple backticks.
+REQUIRED JSON FORMAT:
 {
   "intentScore": <number>,
   "stage": "<stage>",
@@ -90,10 +148,9 @@ Notes: ${clientProfile.notes || "None"}`);
   contextParts.push(`NEW MESSAGE FROM CLIENT:\n${message}`);
 
   try {
+    const { client: anthropic, model } = getAnthropicClient();
     const response = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_API_KEY?.startsWith("sk-or-v1")
-        ? "anthropic/claude-3.5-sonnet"
-        : "claude-3-5-sonnet-latest",
+      model,
       max_tokens: 1024,
       system: INTENT_ANALYSIS_PROMPT,
       messages: [
@@ -107,8 +164,11 @@ Notes: ${clientProfile.notes || "None"}`);
     const text =
       response.content[0].type === "text" ? response.content[0].text : "";
 
-    // Parse JSON response
-    const parsed = JSON.parse(text);
+    // Robust JSON extraction (handles conversational preamble and markdown blocks)
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    const cleanJson = jsonMatch ? jsonMatch[0] : text;
+    
+    const parsed = JSON.parse(cleanJson);
     return IntentAnalysis.parse(parsed);
   } catch (error) {
     console.error("Intent analysis failed, returning defaults:", error);

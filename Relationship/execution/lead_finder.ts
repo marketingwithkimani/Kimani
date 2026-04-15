@@ -1,20 +1,63 @@
 import Anthropic from "@anthropic-ai/sdk";
+import axios from "axios";
 import { ProspectProfile } from "./email_types.js";
 import "dotenv/config";
 
-const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+// ─── Lazy Client Factory ─────────────────────────────────────
+function getAnthropicClient() {
+  const activeKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY;
+  const isOR = activeKey?.startsWith("sk-or-v1");
+  
+  if (isOR) {
+    return {
+      client: {
+        messages: {
+          create: async (params: any) => {
+            const response = await axios.post(
+              "https://openrouter.ai/api/v1/chat/completions",
+              {
+                model: "anthropic/claude-3-haiku",
+                messages: params.messages.map((m: any) => ({
+                  role: m.role,
+                  content: m.content
+                })),
+                system: params.system,
+                max_tokens: params.max_tokens,
+              },
+              {
+                headers: {
+                  "Authorization": `Bearer ${activeKey}`,
+                  "HTTP-Referer": "https://marketingwithkimani.co.ke",
+                  "X-Title": "Marketing with Kimani",
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            
+            const choice = response.data.choices[0];
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: choice.message.content
+                }
+              ]
+            };
+          }
+        }
+      } as any,
+      model: "anthropic/claude-3-haiku",
+    };
+  }
 
-const anthropic = new Anthropic({
-  apiKey: activeKey,
-  baseURL: activeKey?.startsWith("sk-or-v1") 
-    ? "https://openrouter.ai/api/v1" 
-    : undefined,
-});
+  return {
+    client: new Anthropic({
+      apiKey: activeKey,
+    }),
+    model: "claude-3-haiku-20240307",
+  };
+}
 
-/**
- * Searches for potential leads in a given industry.
- * Uses AI to synthesize realistic lead targets based on market context.
- */
 export async function findPotentialLeads(
   industry: string,
   targetRole: string,
@@ -22,11 +65,10 @@ export async function findPotentialLeads(
 ): Promise<ProspectProfile[]> {
   console.log(`\n🔍 AI Lead Finder: Researching ${targetRole} leads in "${industry}" market...`);
   
-  const isOpenRouter = activeKey?.startsWith("sk-or-v1");
-  const model = isOpenRouter ? "anthropic/claude-3-haiku" : "claude-3-haiku-20240307";
+  const { client: anthropic, model } = getAnthropicClient();
 
   const prompt = `Act as an expert market intelligence analyst. 
-Generate ${count} realistic B2B leads for a marketing consultant targeting ${industry} in the African market (especially Kenya, Nigeria, South Africa).
+Generate ${count} realistic B2B leads for a marketing consultant targeting ${industry} across the entire African continent. Focus on hubs like Nairobi (Kenya), Lagos (Nigeria), Johannesburg (South Africa), Accra (Ghana), Kigali (Rwanda), Cairo (Egypt), and Casablanca (Morocco).
 
 The target role should be around ${targetRole}.
 

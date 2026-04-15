@@ -3,6 +3,7 @@
  *
  * Exposes the Relationship Brain via a REST API for the frontend demo.
  */
+console.log(">>> AI SERVER SCRIPT STARTING <<<");
 
 import express from "express";
 import cors from "cors";
@@ -17,10 +18,32 @@ import { sendEmailToProspect } from "./delivery_engine.js";
 import { generateEmail } from "./email_engine.js";
 import { ClientProfile, ConversationMessage } from "./types.js";
 import { google } from "googleapis";
-import "dotenv/config";
+import dotenv from "dotenv";
+import { resolve as resolvePath } from "path";
+
+// Explicitly resolve .env — works regardless of which directory npm start is run from
+const envPath1 = resolvePath(process.cwd(), ".env");
+const envPath2 = resolvePath(process.cwd(), "..", ".env");
+const loadedEnv = dotenv.config({ path: envPath1 });
+if (loadedEnv.error) {
+  dotenv.config({ path: envPath2 });
+}
+
+// Startup diagnostic — shows whether the API key is loaded and what type it is
+const apiKey = process.env.ANTHROPIC_API_KEY || process.env.OPENROUTER_API_KEY || "";
+if (!apiKey) {
+  console.error("❌ CRITICAL: No API key found. Set ANTHROPIC_API_KEY in your .env file.");
+} else if (apiKey.startsWith("sk-or-v1")) {
+  console.log("✅ API Key Type: OpenRouter (sk-or-v1-...)");
+  console.log("   → Routing via https://openrouter.ai/api");
+} else if (apiKey.startsWith("sk-ant")) {
+  console.log("✅ API Key Type: Anthropic (sk-ant-...)");
+} else {
+  console.warn("⚠️  API Key found but type is unrecognised. Check your .env ANTHROPIC_API_KEY value.");
+}
 
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3010;
 
 // Persistent store fallback if Google Sheets is not configured
 import * as fs from "fs";
@@ -31,11 +54,28 @@ const POTENTIAL_LEADS_FILE = isVercel ? path.join("/tmp", "potential_leads_backu
 
 function saveLeadToBackup(lead: any) {
   try {
-    let leads = [];
+    let leads: any[] = [];
     if (fs.existsSync(LEADS_FILE)) {
       leads = JSON.parse(fs.readFileSync(LEADS_FILE, "utf-8"));
     }
-    leads.push({ ...lead, timestamp: new Date().toISOString() });
+    
+    // Group by Session ID to capture the "Whole Conversation"
+    const existingIndex = leads.findIndex(l => l.sessionId === lead.sessionId);
+    
+    if (existingIndex !== -1) {
+      // Update existing lead with latest interaction data
+      leads[existingIndex] = {
+        ...leads[existingIndex],
+        ...lead,
+        // Append conversation history if provided
+        fullConversation: lead.fullConversation || leads[existingIndex].fullConversation,
+        timestamp: new Date().toISOString()
+      };
+    } else {
+      // Create new lead entry
+      leads.push({ ...lead, timestamp: new Date().toISOString() });
+    }
+    
     fs.writeFileSync(LEADS_FILE, JSON.stringify(leads, null, 2));
   } catch (e) {
     console.error("Backup failed", e);
@@ -90,7 +130,10 @@ function getOrCreateSession(sessionId: string) {
   return sessions.get(sessionId)!;
 }
 
-app.post("/api/chat", async (req, res) => {
+app.get("/ping", (req, res) => res.send("pong"));
+
+app.post("/kimani-ai-core/chat", async (req, res) => {
+  fs.appendFileSync('debug.log', `[${new Date().toISOString()}] HIT /api/rel-chat\n`);
   const { sessionId, message } = req.body;
 
   if (!sessionId || !message) {
@@ -120,7 +163,12 @@ app.post("/api/chat", async (req, res) => {
       momentum
     );
 
-    // 5. Update Session
+    // 5. Process Bursts
+    const rawResponse = result.response;
+    const bursts = rawResponse.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
+    const cleanResponse = bursts.join(" ");
+
+    // 6. Update Session
     const userMsg: ConversationMessage = {
       role: "user",
       content: message,
@@ -128,13 +176,13 @@ app.post("/api/chat", async (req, res) => {
     };
     const assistantMsg: ConversationMessage = {
       role: "assistant",
-      content: result.response,
+      content: cleanResponse, // Store clean text in history for better AI reasoning
       timestamp: new Date().toISOString(),
     };
 
     history.push(userMsg, assistantMsg);
     
-    // 6. Save Profile (Persistence)
+    // 7. Save Profile (Persistence) & Interaction Tracking
     try {
       // Update profile with any extracted memory
       if (result.memoryUpdates) {
@@ -142,6 +190,12 @@ app.post("/api/chat", async (req, res) => {
       }
       profile.lastContactDate = new Date().toISOString();
       profile.conversationCount++;
+      profile.messageCount = (profile.messageCount || 0) + 1;
+      
+      // Auto-increment disclosure level every 3 messages
+      if (profile.messageCount % 3 === 0) {
+        profile.disclosureLevel = (profile.disclosureLevel || 0) + 1;
+      }
       
       // Save to Google Sheets if possible
       if (process.env.MEMORY_SPREADSHEET_ID) {
@@ -150,10 +204,16 @@ app.post("/api/chat", async (req, res) => {
       
       // Always save to local backup for dashboard stability
       saveLeadToBackup({
+        sessionId,
         name: profile.name || "Anonymous",
-        email: profile.profession || "Chat Lead", // Using profession as a proxy if email not known yet
+        profession: profile.profession || "Chat Lead",
+        country: profile.country || "Not specified",
         company: profile.notes || "AI Chat",
         stage: intent.stage,
+        intentScore: intent.intentScore,
+        discoverySummary: result.discoverySummary || "Establishing rapport...",
+        suggestedNextAction: result.suggestedNextAction || "Continue discovery.",
+        fullConversation: history,
         capturedVia: "AI Relationship Agent"
       });
     } catch (saveError) {
@@ -166,7 +226,8 @@ app.post("/api/chat", async (req, res) => {
     }
 
     res.json({
-      response: result.response,
+      response: cleanResponse,
+      bursts,
       intent: {
         score: intent.intentScore,
         stage: intent.stage,
@@ -175,6 +236,7 @@ app.post("/api/chat", async (req, res) => {
     });
 
   } catch (error: any) {
+    fs.appendFileSync('debug.log', `[${new Date().toISOString()}] ERROR: ${error.message}\n${error.stack}\n`);
     console.error("Chat error:", error);
     res.status(500).json({ error: error.message || "Internal server error" });
   }
@@ -251,7 +313,10 @@ Marketing with Kimani`;
 
 // ─── Dashboard API ───────────────────────────────────────────
 
-const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD || "0727856464"; // Default demo password
+const DASHBOARD_PASSWORD = process.env.DASHBOARD_PASSWORD;
+if (!DASHBOARD_PASSWORD) {
+  console.warn("⚠️  DASHBOARD_PASSWORD not set in .env. Dashboard login will not be possible.");
+}
 
 app.post("/api/login", (req, res) => {
   const { password } = req.body;
@@ -323,17 +388,27 @@ app.get("/api/dashboard/potential-leads", async (req, res) => {
 
 app.post("/api/automation/run", async (req, res) => {
   try {
-    // 1. Actually find some leads
-    const industries = ["Technology", "Real Estate", "Aviation", "Banking"];
-    const randomIndustry = industries[Math.floor(Math.random() * industries.length)];
-    const discovered = await findPotentialLeads(randomIndustry, "Director");
+    // 1. Research high-growth African markets
+    const industries = ["Technology", "Real Estate", "Aviation", "Banking", "AgriTech", "Renewable Energy"];
+    const countries = ["Kenya", "Nigeria", "South Africa", "Ghana", "Rwanda", "Ethiopia", "Mauritius"];
     
-    // 2. Format for dashboard queue
+    const randomIndustry = industries[Math.floor(Math.random() * industries.length)];
+    const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+    const searchQuery = `${randomIndustry} in ${randomCountry}`;
+    
+    const discovered = await findPotentialLeads(searchQuery, "Founder or Director");
+    
+    // 2. Format for dashboard queue with deep insights
     const queueItems = discovered.map(l => ({
       id: l.prospectId,
+      name: l.name,
+      email: l.email,
       company: l.companyName,
-      strategy: l.observations[0] || "Warm Outreach",
-      status: "Ready for Email"
+      location: randomCountry,
+      industry: randomIndustry,
+      discovery: l.observations.join(", "),
+      strategy: `AI Suggested: Reach out regarding ${l.painPoints[0] || "market expansion"} in ${randomCountry}.`,
+      status: "Ready for Outreach"
     }));
     
     // 3. Save to potential leads backup
@@ -341,11 +416,11 @@ app.post("/api/automation/run", async (req, res) => {
 
     res.json({ 
       success: true, 
-      message: `A.I. has completed its analysis of the ${randomIndustry} market.`,
+      message: `A.I. has completed its analysis of ${randomCountry}'s ${randomIndustry} market.`,
       actions: [
-        `Identified ${discovered.length} high-intent prospects...`,
-        "Generated personalized curiosity triggers...",
-        "Queuing automation sequences for review."
+        `Identified ${discovered.length} strategic partners in ${randomCountry}...`,
+        "Extracted market-specific pain points...",
+        "Queuing personalized outreach sequences."
       ]
     });
   } catch (error: any) {
@@ -398,7 +473,7 @@ app.post("/api/leads/send-email", async (req, res) => {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(port, () => {
+  app.listen(port, "0.0.0.0", () => {
     console.log(`Relationship AI Server running at http://localhost:${port}`);
   });
 }
