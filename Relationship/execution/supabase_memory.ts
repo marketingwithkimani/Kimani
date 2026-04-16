@@ -4,7 +4,8 @@ import { ClientProfile, ConversationMessage } from "./types.js";
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_KEY || "";
 
-export const supabase = (supabaseUrl && supabaseKey) 
+// Only initialize if both are present and not empty/placeholder
+export const supabase = (supabaseUrl && supabaseKey && supabaseUrl.startsWith("http")) 
   ? createClient(supabaseUrl, supabaseKey)
   : null;
 
