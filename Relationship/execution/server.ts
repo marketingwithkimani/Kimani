@@ -205,35 +205,30 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
     return res.status(400).json({ error: "Missing sessionId or message" });
   }
 
-  try {
     const session = await getOrCreateSession(sessionId);
     const { profile, history } = session;
 
-    // 1. Analyze Intent
-    const intent = await analyzeIntent(message, history, profile);
+    // 1. Core Engine Call (Single Unified Thought)
+    // We run momentum and variability in parallel since they are local functions
+    const momentum = calculateMomentum(message, history, { intentScore: profile.intentHistory[0]?.score || 40 } as any);
+    const variability = generateVariabilityDirective({ intentScore: 40 } as any, history);
 
-    // 2. Momentum
-    const momentum = calculateMomentum(message, history, intent);
-
-    // 3. Variability
-    const variability = generateVariabilityDirective(intent, history);
-
-    // 4. Generate Response
     const result = await generateResponse(
       message,
       history,
       profile,
-      intent,
       variability,
       momentum
     );
 
-    // 5. Process Bursts
+    const intent = result.intent;
+
+    // 2. Process Bursts
     const rawResponse = result.response;
     const bursts = rawResponse.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
     const cleanResponse = bursts.join(" ");
 
-    // 6. Update Session
+    // 3. Update Session
     const userMsg: ConversationMessage = {
       role: "user",
       content: message,
@@ -241,15 +236,14 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
     };
     const assistantMsg: ConversationMessage = {
       role: "assistant",
-      content: cleanResponse, // Store clean text in history for better AI reasoning
+      content: cleanResponse,
       timestamp: new Date().toISOString(),
     };
 
     history.push(userMsg, assistantMsg);
     
-    // 7. Save Profile (Persistence) & Interaction Tracking
+    // 4. Save Profile (Persistence) & Interaction Tracking
     try {
-      // Update profile with any extracted memory
       if (result.memoryUpdates) {
         Object.assign(profile, result.memoryUpdates);
       }
@@ -257,38 +251,33 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
       profile.conversationCount++;
       profile.messageCount = (profile.messageCount || 0) + 1;
       
-      // Auto-increment disclosure level every 3 messages
       if (profile.messageCount % 3 === 0) {
         profile.disclosureLevel = (profile.disclosureLevel || 0) + 1;
       }
       
-      // Save to Google Sheets if possible
-      if (process.env.MEMORY_SPREADSHEET_ID) {
-        await saveClientProfile(profile);
-      }
-      
-      // Save to Supabase
+      // Save everything to Supabase
       if (process.env.SUPABASE_URL) {
-        await saveClientProfileSupabase(profile);
-        await logConversationMessageSupabase(sessionId, userMsg);
-        await logConversationMessageSupabase(sessionId, assistantMsg);
-        
-        await saveLeadSupabase({
-          sessionId,
-          name: profile.name || "Anonymous",
-          profession: profile.profession || "Chat Lead",
-          country: profile.country || "Not specified",
-          company: profile.notes || "AI Chat",
-          stage: intent.stage,
-          intentScore: intent.intentScore,
-          discoverySummary: result.discoverySummary || "Establishing rapport...",
-          suggestedNextAction: result.suggestedNextAction || "Continue discovery.",
-          fullConversation: history,
-          capturedVia: "AI Relationship Agent"
-        });
+        await Promise.all([
+          saveClientProfileSupabase(profile),
+          logConversationMessageSupabase(sessionId, userMsg),
+          logConversationMessageSupabase(sessionId, assistantMsg),
+          saveLeadSupabase({
+            sessionId,
+            name: profile.name || "Anonymous",
+            profession: profile.profession || "Chat Lead",
+            country: profile.country || "Not specified",
+            company: profile.notes || "AI Chat",
+            stage: intent.stage,
+            intentScore: intent.intentScore,
+            discoverySummary: result.discoverySummary || "Establishing rapport...",
+            suggestedNextAction: result.suggestedNextAction || "Continue discovery.",
+            fullConversation: history,
+            capturedVia: "AI Relationship Agent"
+          })
+        ]);
       }
       
-      // Always save to local backup for dashboard stability
+      // Local backup
       saveLeadToBackup({
         sessionId,
         name: profile.name || "Anonymous",
@@ -306,7 +295,6 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
       console.warn("Non-critical save error:", saveError);
     }
 
-    // Limits history to last 20 messages
     if (history.length > 20) {
       session.history = history.slice(-20);
     }

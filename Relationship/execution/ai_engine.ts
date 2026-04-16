@@ -76,16 +76,33 @@ function buildSystemPrompt(
   const countryContext = clientProfile?.country ? `USER IS IN: ${clientProfile.country}. Adapt tone (KE: use "kidogo" / NG: be high-energy).` : "";
   
   parts.push(`NON-NEGOTIABLE OVERRIDE:
+- FIRST: Perform a strategic analysis (The Strategist Brain).
+- SECOND: Write a message to the client (The Relationship Brain).
 - MAX 2 LINES PER BUBBLE. MAX 4 BUBBLES.
 - USE [BURST] TO SPLIT.
 - 70% Discovery / 30% Soft Pitch.
 - ZERO BULLET POINTS. ZERO LISTS.
 
+STRATEGIC ANALYSIS FORMAT (HIDDEN):
+You must start your response with:
+<strategist_analysis>
+{
+  "intentScore": 0-100,
+  "stage": "curiosity" | "exploration" | "evaluation" | "consideration" | "purchase_readiness" | "conversion",
+  "emotion": "neutral" | "positive" | "excited" | "anxious" | "frustrated" | "confused",
+  "buyingSignals": ["signal1", "signal2"],
+  "decisionReadiness": 0-100,
+  "suggestedMove": "One sentence growth advice",
+  "avoid": "What NOT to do",
+  "discoverySummary": "Summary of client context learned"
+}
+</strategist_analysis>
+
 MANDATORY FLOW:
 1. React: "hmm...", "yeah...", "honestly...".
 2. Reflect: Mirror their situation.
 3. Insight: Give a 1-line perspective drop.
-4. (Optional) Pitch: ONE LINE: "That's something I help with."
+4. (Optional) Pitch: ONLY if intentScore > 70. ONE LINE.
 5. Ask: ONE sharp discovery question.
 
 STYLE:
@@ -98,21 +115,10 @@ STYLE:
 Kimani. Focus on trust-driven strategies for the 67% (African market).
 Bio/Facts: ${personality.bio ?? ""}`);
 
-  // 4. STRATEGIST SCRATCHPAD (Hidden metadata)
-  parts.push(`SCRATCHPAD DIRECTIVE:
-At the end of your response, you MUST include a hidden update block for the dashboard.
-Format:
-<discovery_update>
-[1-sentence summary of what you discovered about their business/needs so far]
-</discovery_update>
-<suggested_action>
-[1-sentence strategic advice for Kimani on how to handle this lead manually]
-</suggested_action>`);
-
-  // 5. FINAL BEHAVIORAL ANCHOR
+  // 3. FINAL BEHAVIORAL ANCHOR
   parts.push(`FINAL LAW: Use [BURST] for 2-5 bubbles. React -> Mirror -> Amplify -> [Earned Pitch] -> Ask. 
 NEVER talk at them. ALWAYS talk WITH them. 
-If it feels like an answer -> REWRITE as a strategist's insight.`);
+If your response feels like an automated answer, rewrite it as a person sharing a thought.`);
 
   return parts.join("\n\n");
 }
@@ -151,20 +157,32 @@ export async function generateResponse(
   message: string,
   conversationHistory: ConversationMessage[],
   clientProfile: ClientProfile | null,
-  intentAnalysis: IntentAnalysis,
   variability: VariabilityDirective,
   momentum?: MomentumState
 ): Promise<{
   response: string;
+  intent: IntentAnalysis;
   memoryUpdates: Record<string, unknown>;
+  discoverySummary: string;
+  suggestedNextAction: string;
   scheduledFollowUps: AIEngineOutput["scheduledFollowUps"];
 }> {
   // HARD-PINNED GREETING: Ensure the first impression is flawless
   if (message === "[CLIENT_LANDED_ON_PAGE]") {
     return {
       response: "hey, welcome 👋🏾 [BURST] quick one — what are you trying to improve in your business right now? [BURST] and where are you based?",
-      intentAnalysis,
-      variabilityDirective: variability,
+      intent: {
+        intentScore: 30,
+        stage: "curiosity",
+        emotion: "neutral",
+        buyingSignals: [],
+        decisionReadiness: 10,
+        knowledgeLevel: "beginner",
+        suggestedMove: "Establish rapport",
+        avoid: "Don't push"
+      } as IntentAnalysis,
+      discoverySummary: "Establishing rapport...",
+      suggestedNextAction: "Continue discovery.",
       memoryUpdates: {},
       scheduledFollowUps: [],
     };
@@ -173,10 +191,22 @@ export async function generateResponse(
   const personality = loadPersonality();
   const { client: anthropic, model } = getAnthropicClient();
 
+  // Create a default intent object in case the AI fails to output one
+  const defaultIntent: IntentAnalysis = {
+    intentScore: 40,
+    stage: "exploration",
+    emotion: "curious",
+    buyingSignals: [],
+    decisionReadiness: 20,
+    knowledgeLevel: "intermediate",
+    suggestedMove: "Keep conversation flowing",
+    avoid: "Sales pressure"
+  } as IntentAnalysis;
+
   const systemPrompt = buildSystemPrompt(
     personality,
     clientProfile,
-    intentAnalysis,
+    defaultIntent, // Passing default to prompt builder for structure
     variability,
     momentum
   );
@@ -195,13 +225,13 @@ export async function generateResponse(
   // Add current message
   messages.push({
     role: "user",
-    content: message + "\n\n(SYSTEM REMINDER: BE EXTREMELY BRIEF. MAX 2 LINES. NO BULLET POINTS)",
+    content: message + "\n\n(REMINDER: Start with <strategist_analysis> JSON block, then your human message)",
   });
 
   try {
     const response = await anthropic.messages.create({
       model,
-      max_tokens: 280,
+      max_tokens: 1000,
       system: systemPrompt,
       messages,
     });
@@ -209,71 +239,46 @@ export async function generateResponse(
     const fullText =
       response.content[0].type === "text" ? response.content[0].text : "";
 
-    // Parse out memory updates
-    const memoryMatch = fullText.match(
-      /<memory_update>([\s\S]*?)<\/memory_update>/
-    );
+    // 1. Extract Strategist Analysis
+    const analysisMatch = fullText.match(/<strategist_analysis>([\s\S]*?)<\/strategist_analysis>/);
+    let intent: IntentAnalysis = defaultIntent;
+    
+    if (analysisMatch) {
+      try {
+        const parsed = JSON.parse(analysisMatch[1].trim());
+        intent = { ...defaultIntent, ...parsed };
+      } catch (e) {
+        console.warn("Strategist analysis parse failed, using defaults.");
+      }
+    }
+
+    // 2. Parse out optional memory updates
+    const memoryMatch = fullText.match(/<memory_update>([\s\S]*?)<\/memory_update>/);
     let memoryUpdates: Record<string, unknown> = {};
     if (memoryMatch) {
-      try {
-        memoryUpdates = JSON.parse(memoryMatch[1].trim());
-      } catch {
-        // Ignore parse errors - memory extraction is best-effort
-      }
+      try { memoryUpdates = JSON.parse(memoryMatch[1].trim()); } catch {}
     }
 
-    // Extract Hidden Metadata
-    const discoveryMatch = fullText.match(/<discovery_update>([\s\S]*?)<\/discovery_update>/);
-    const discoverySummary = discoveryMatch ? discoveryMatch[1].trim() : "";
-
-    const actionMatch = fullText.match(/<suggested_action>([\s\S]*?)<\/suggested_action>/);
-    const suggestedNextAction = actionMatch ? actionMatch[1].trim() : "";
-
-    // Extract the actual response (everything before metadata tags)
+    // 3. Extract the actual response (everything after the analysis tag)
     let responseText = fullText
+      .replace(/<strategist_analysis>[\s\S]*?<\/strategist_analysis>/, "")
       .replace(/<memory_update>[\s\S]*?<\/memory_update>/, "")
-      .replace(/<discovery_update>[\s\S]*?<\/discovery_update>/, "")
-      .replace(/<suggested_action>[\s\S]*?<\/suggested_action>/, "")
       .trim();
 
-    // SERVER-SIDE SAFETY NET: Limit character length and bursts
+    // 4. Server-side cleanup
     let bursts = responseText.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
-    
-    // Strict max 4 bubbles
-    if (bursts.length > 4) {
-      bursts = bursts.slice(0, 4);
-    }
-    
-    // Hard check length (prevent consultant-style paragraphs)
-    bursts = bursts.map(b => {
-      if (b.length > 250) {
-        return b.substring(0, 247).trim() + "...";
-      }
-      return b;
-    });
-    
+    if (bursts.length > 4) bursts = bursts.slice(0, 4);
+    bursts = bursts.map(b => (b.length > 300 ? b.substring(0, 297) + "..." : b));
     responseText = bursts.join(" [BURST] ").trim();
 
-    // Detect scheduled follow-ups from timeline events in memory
-    const scheduledFollowUps: AIEngineOutput["scheduledFollowUps"] = [];
-    if (memoryUpdates.timelineEvents && Array.isArray(memoryUpdates.timelineEvents)) {
-      for (const event of memoryUpdates.timelineEvents) {
-        if (event.approximateDate && !event.followedUp) {
-          scheduledFollowUps.push({
-            message: `Follow up about: ${event.event}`,
-            delayDays: estimateDelayDays(event.approximateDate),
-            reason: `Client mentioned ${event.event} around ${event.approximateDate}`,
-          });
-        }
-      }
-    }
-
+    // 5. Build output
     return {
       response: responseText,
-      discoverySummary,
-      suggestedNextAction,
+      intent,
       memoryUpdates,
-      scheduledFollowUps,
+      discoverySummary: intent.discoverySummary || "Establishing rapport...",
+      suggestedNextAction: intent.suggestedMove || "Continue discovery.",
+      scheduledFollowUps: [], // Logic handled in server.ts
     };
   } catch (error) {
     console.error("AI Engine response generation failed:", error);
