@@ -52,6 +52,13 @@ if (!apiKey) {
   console.warn("⚠️  API Key found but type is unrecognised. Check your .env ANTHROPIC_API_KEY value.");
 }
 
+// Supabase diagnostic
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error("❌ CRITICAL: Supabase credentials missing. Relationship Engine will be unstable.");
+} else {
+  console.log("✅ Supabase Connected:", process.env.SUPABASE_URL);
+}
+
 const app = express();
 const port = process.env.PORT || 3010;
 
@@ -124,6 +131,18 @@ const sessions = new Map<string, {
   profile: ClientProfile;
   history: ConversationMessage[];
 }>();
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "online",
+    time: new Date().toISOString(),
+    env: {
+      supabase: !!process.env.SUPABASE_URL,
+      anthropic: !!process.env.ANTHROPIC_API_KEY,
+      sheets: !!process.env.MEMORY_SPREADSHEET_ID
+    }
+  });
+});
 
 async function getOrCreateSession(sessionId: string) {
   if (!sessions.has(sessionId)) {

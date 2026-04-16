@@ -4,12 +4,15 @@ import { ClientProfile, ConversationMessage } from "./types.js";
 const supabaseUrl = process.env.SUPABASE_URL || "";
 const supabaseKey = process.env.SUPABASE_KEY || "";
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+export const supabase = (supabaseUrl && supabaseKey) 
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 /**
  * Load a client profile by ID using Supabase.
  */
 export async function loadClientProfile(clientId: string): Promise<ClientProfile | null> {
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
@@ -29,6 +32,7 @@ export async function loadClientProfile(clientId: string): Promise<ClientProfile
  * Save a client profile to Supabase.
  */
 export async function saveClientProfile(profile: ClientProfile): Promise<void> {
+  if (!supabase) return;
   const { error } = await supabase
     .from("profiles")
     .upsert(profile, { onConflict: "clientId" });
@@ -43,6 +47,7 @@ export async function saveClientProfile(profile: ClientProfile): Promise<void> {
  * Log a conversation message to Supabase.
  */
 export async function logConversationMessage(clientId: string, message: ConversationMessage): Promise<void> {
+  if (!supabase) return;
   const { error } = await supabase
     .from("conversations")
     .insert({
@@ -62,6 +67,7 @@ export async function logConversationMessage(clientId: string, message: Conversa
  * Load recent conversation history for a client from Supabase.
  */
 export async function loadConversationHistory(clientId: string, limit: number = 20): Promise<ConversationMessage[]> {
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("conversations")
     .select("role, content, timestamp")
@@ -82,6 +88,7 @@ export async function loadConversationHistory(clientId: string, limit: number = 
  * Save lead/interaction data to Supabase leads table.
  */
 export async function saveLead(lead: any): Promise<void> {
+  if (!supabase) return;
   const { error } = await supabase
     .from("leads")
     .insert([
@@ -101,6 +108,7 @@ export async function saveLead(lead: any): Promise<void> {
  * Fetch all leads from Supabase.
  */
 export async function loadLeadsFromSupabase() {
+  if (!supabase) return { data: [], error: new Error("Supabase not initialized") };
   return await supabase
     .from("leads")
     .select("*")
