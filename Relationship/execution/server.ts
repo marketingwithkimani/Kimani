@@ -13,6 +13,14 @@ import { generateVariabilityDirective } from "./variability_engine.js";
 import { generateResponse } from "./ai_engine.js";
 import { loadProspect, saveProspect, initializeEmailSheets } from "./email_campaign.js";
 import { loadClientProfile, saveClientProfile, initializeSpreadsheet } from "./memory_store.js";
+import { 
+  loadClientProfile as loadClientProfileSupabase, 
+  saveClientProfile as saveClientProfileSupabase, 
+  logConversationMessage as logConversationMessageSupabase,
+  loadConversationHistory as loadConversationHistorySupabase,
+  saveLead as saveLeadSupabase,
+  loadLeadsFromSupabase
+} from "./supabase_memory.js";
 import { findPotentialLeads } from "./lead_finder.js";
 import { sendEmailToProspect } from "./delivery_engine.js";
 import { generateEmail } from "./email_engine.js";
@@ -117,10 +125,25 @@ const sessions = new Map<string, {
   history: ConversationMessage[];
 }>();
 
-function getOrCreateSession(sessionId: string) {
+async function getOrCreateSession(sessionId: string) {
   if (!sessions.has(sessionId)) {
-    sessions.set(sessionId, {
-      profile: {
+    // Try loading from Supabase first
+    let profile: ClientProfile | null = null;
+    let history: ConversationMessage[] = [];
+
+    try {
+      if (process.env.SUPABASE_URL) {
+        profile = await loadClientProfileSupabase(sessionId);
+        if (profile) {
+          history = await loadConversationHistorySupabase(sessionId);
+        }
+      }
+    } catch (err) {
+      console.warn("Supabase session load error:", err);
+    }
+
+    if (!profile) {
+      profile = {
         clientId: sessionId,
         goals: [],
         challenges: [],
@@ -135,9 +158,10 @@ function getOrCreateSession(sessionId: string) {
         intentHistory: [],
         conversationCount: 0,
         notes: "",
-      },
-      history: [],
-    });
+      };
+    }
+
+    sessions.set(sessionId, { profile, history });
   }
   return sessions.get(sessionId)!;
 }
@@ -154,7 +178,7 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
   }
 
   try {
-    const session = getOrCreateSession(sessionId);
+    const session = await getOrCreateSession(sessionId);
     const { profile, history } = session;
 
     // 1. Analyze Intent
@@ -213,6 +237,27 @@ app.post("/kimani-ai-core/chat", async (req, res) => {
       // Save to Google Sheets if possible
       if (process.env.MEMORY_SPREADSHEET_ID) {
         await saveClientProfile(profile);
+      }
+      
+      // Save to Supabase
+      if (process.env.SUPABASE_URL) {
+        await saveClientProfileSupabase(profile);
+        await logConversationMessageSupabase(sessionId, userMsg);
+        await logConversationMessageSupabase(sessionId, assistantMsg);
+        
+        await saveLeadSupabase({
+          sessionId,
+          name: profile.name || "Anonymous",
+          profession: profile.profession || "Chat Lead",
+          country: profile.country || "Not specified",
+          company: profile.notes || "AI Chat",
+          stage: intent.stage,
+          intentScore: intent.intentScore,
+          discoverySummary: result.discoverySummary || "Establishing rapport...",
+          suggestedNextAction: result.suggestedNextAction || "Continue discovery.",
+          fullConversation: history,
+          capturedVia: "AI Relationship Agent"
+        });
       }
       
       // Always save to local backup for dashboard stability
@@ -277,16 +322,9 @@ app.post("/api/contact", async (req, res) => {
     // Save to backup
     saveLeadToBackup(lead);
 
-    // If Google Sheets is configured, save as prospect
-    if (process.env.MEMORY_SPREADSHEET_ID) {
-      const prospect = {
-        prospectId: `lead-${Date.now()}`,
-        name: fullName,
-        email: email,
-        industry: organization || "General",
-        status: "captured"
-      };
-      await saveProspect(prospect as any);
+    // Save to Supabase
+    if (process.env.SUPABASE_URL) {
+      await saveLeadSupabase(lead);
     }
 
     // Send an automatic response using 'enquiries'
@@ -354,11 +392,21 @@ app.get("/api/dashboard/stats", async (req, res) => {
 app.get("/api/dashboard/leads", async (req, res) => {
   try {
     let leads = [];
-    if (fs.existsSync(LEADS_FILE)) {
+    
+    // Try fetching from Supabase first
+    if (process.env.SUPABASE_URL) {
+      const { data, error } = await loadLeadsFromSupabase();
+      if (!error && data) {
+        leads = data;
+      }
+    }
+
+    // Fallback to local file if Supabase is empty or failed
+    if (leads.length === 0 && fs.existsSync(LEADS_FILE)) {
       leads = JSON.parse(fs.readFileSync(LEADS_FILE, "utf-8"));
     }
     
-    // If no real leads, return the mock ones for visual stability
+    // If no real leads anywhere, return the mock ones for visual stability
     if (leads.length === 0) {
       leads = [
         { name: "Sarah J.", email: "sarah@example.com", company: "FinTech Hub", stage: "Ready", capturedVia: "67% Page" },
