@@ -461,39 +461,16 @@ document.addEventListener('DOMContentLoaded', () => {
   const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:3010'
     : '';
-  const sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
   
-  // ─── INITIALIZE AI BRAIN GREETING ───
-  async function initChat() {
-    // Show typing indicator
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'message assistant typing';
-    typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-    chatMessages.appendChild(typingDiv);
-    
-    try {
-      const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message: "[CLIENT_LANDED_ON_PAGE]" })
-      });
-
-      const data = await response.json();
-      chatMessages.removeChild(typingDiv);
-
-      if (data.response) {
-        addMessage('assistant', data.response);
-      }
-    } catch (error) {
-      chatMessages.removeChild(typingDiv);
-      addMessage('assistant', "I'm currently deep in strategic thought, or perhaps just ensuring the engine is perfectly tuned for your market. Either way, let's not let the conversation end here. Reach out to me at enquiries@marketingwithkimani.co.ke and let's talk about your growth.");
-      console.error('Chat error:', error);
-    }
+  // ─── SESSION PERSISTENCE ───
+  // Use existing ID from localStorage or create a new one
+  let sessionId = localStorage.getItem('kimani_session_id');
+  if (!sessionId) {
+    sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('kimani_session_id', sessionId);
   }
-
-  // Trigger AI Greeting
-  initChat();
-
+  
+  // ─── UTILS ───
   function addMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role}`;
@@ -502,6 +479,65 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
+  function showTyping() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message assistant typing';
+    typingDiv.id = 'activeTyping';
+    typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return typingDiv;
+  }
+
+  function removeTyping() {
+    const typing = document.getElementById('activeTyping');
+    if (typing) typing.remove();
+  }
+
+  // ─── API CALL WITH RETRY ───
+  async function callBrain(message, retries = 2) {
+    try {
+      const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, message })
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+      return await response.json();
+    } catch (error) {
+      if (retries > 0) {
+        console.log(`Retrying... attempts left: ${retries}`);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return callBrain(message, retries - 1);
+      }
+      throw error;
+    }
+  }
+
+  // ─── INITIALIZE AI BRAIN GREETING ───
+  async function initChat() {
+    showTyping();
+    try {
+      const data = await callBrain("[CLIENT_LANDED_ON_PAGE]");
+      removeTyping();
+
+      if (data.response) {
+        // Only greeting if chat is empty
+        if (chatMessages.children.length <= 0) {
+          addMessage('assistant', data.response);
+        }
+      }
+    } catch (error) {
+      removeTyping();
+      addMessage('assistant', "hey... just getting my thoughts together. 👋🏾 [BURST] what are you working on in your business right now?");
+      console.error('Initial chat error:', error);
+    }
+  }
+
+  // Trigger AI Greeting
+  initChat();
+
   async function handleSend() {
     const text = chatInput.value.trim();
     if (!text) return;
@@ -509,48 +545,29 @@ document.addEventListener('DOMContentLoaded', () => {
     chatInput.value = '';
     addMessage('user', text);
 
-    // Show typing indicator
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'message assistant typing';
-    typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-    chatMessages.appendChild(typingDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    showTyping();
 
     try {
-      const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message: text })
-      });
-
-      const data = await response.json();
-      chatMessages.removeChild(typingDiv);
+      const data = await callBrain(text);
+      removeTyping();
 
       if (data.bursts && Array.isArray(data.bursts)) {
-        // Handle Burst Mode: multiple bubbles with delay
         for (let i = 0; i < data.bursts.length; i++) {
           addMessage('assistant', data.bursts[i]);
-          
-          // If not the last burst, show typing indicator for the next one
           if (i < data.bursts.length - 1) {
-            const burstTyping = document.createElement('div');
-            burstTyping.className = 'message assistant typing';
-            burstTyping.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
-            chatMessages.appendChild(burstTyping);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            await new Promise(resolve => setTimeout(resolve, 800)); // Delay between bursts
-            chatMessages.removeChild(burstTyping);
+            showTyping();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            removeTyping();
           }
         }
       } else if (data.response) {
         addMessage('assistant', data.response);
       } else {
-        addMessage('assistant', "I'm having a bit of trouble connecting to my brain right now. But I'm still listening.");
+        addMessage('assistant', "I'm processing that... give me one more moment.");
       }
     } catch (error) {
-      chatMessages.removeChild(typingDiv);
-      addMessage('assistant', "I'm currently deep in strategic thought, or perhaps just ensuring the engine is perfectly tuned for your market. Either way, let's not let the conversation end here. Reach out to me at enquiries@marketingwithkimani.co.ke and let's talk about your growth.");
+      removeTyping();
+      addMessage('assistant', "I'm having a bit of trouble connecting to my brain right now. But I'm still listening. Mind trying that again?");
       console.error('Chat error:', error);
     }
   }

@@ -126,63 +126,72 @@ function savePotentialLeadsToBackup(newLeads: any[]) {
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-// In-memory sessions (for demo purposes)
-const sessions = new Map<string, {
-  profile: ClientProfile;
-  history: ConversationMessage[];
-}>();
-
-app.get("/api/health", (req, res) => {
-  res.json({
-    status: "online",
-    time: new Date().toISOString(),
-    env: {
-      supabase: !!process.env.SUPABASE_URL,
-      anthropic: !!process.env.ANTHROPIC_API_KEY,
-      sheets: !!process.env.MEMORY_SPREADSHEET_ID
-    }
-  });
-});
+// No more in-memory sessions! We fetch from Supabase or Local Backup on every request 
+// to ensure the brain never 'forgets' in a serverless environment.
 
 async function getOrCreateSession(sessionId: string) {
-  if (!sessions.has(sessionId)) {
-    // Try loading from Supabase first
-    let profile: ClientProfile | null = null;
-    let history: ConversationMessage[] = [];
+  // 1. Try loading from Supabase first
+  let profile: ClientProfile | null = null;
+  let history: ConversationMessage[] = [];
 
+  try {
+    if (process.env.SUPABASE_URL) {
+      profile = await loadClientProfileSupabase(sessionId);
+      if (profile) {
+        history = await loadConversationHistorySupabase(sessionId);
+      }
+    }
+  } catch (err) {
+    console.warn("Supabase session load error:", err);
+  }
+
+  // 2. If not in Supabase, try loading from local backup (for dashboard stability)
+  if (!profile) {
     try {
-      if (process.env.SUPABASE_URL) {
-        profile = await loadClientProfileSupabase(sessionId);
-        if (profile) {
-          history = await loadConversationHistorySupabase(sessionId);
+      const LEADS_FILE = process.env.VERCEL === "1" ? "/tmp/leads_backup.json" : "leads_backup.json";
+      if (fs.existsSync(LEADS_FILE)) {
+        const leads = JSON.parse(fs.readFileSync(LEADS_FILE, "utf-8"));
+        const lead = leads.find((l: any) => l.sessionId === sessionId);
+        if (lead) {
+          // Reconstruct profile/history from backup
+          profile = {
+            clientId: sessionId,
+            name: lead.name,
+            profession: lead.profession,
+            notes: lead.company,
+            goals: [], challenges: [], interests: [], financialConcerns: [], healthConcerns: [], 
+            familyReferences: [], lifeEvents: [], preferredTone: "friendly", 
+            previousQuestions: [], timelineEvents: [], intentHistory: [], conversationCount: 1
+          };
+          history = lead.fullConversation || [];
         }
       }
-    } catch (err) {
-      console.warn("Supabase session load error:", err);
+    } catch (e) {
+      console.warn("Local backup load error:", e);
     }
-
-    if (!profile) {
-      profile = {
-        clientId: sessionId,
-        goals: [],
-        challenges: [],
-        interests: [],
-        financialConcerns: [],
-        healthConcerns: [],
-        familyReferences: [],
-        lifeEvents: [],
-        preferredTone: "friendly",
-        previousQuestions: [],
-        timelineEvents: [],
-        intentHistory: [],
-        conversationCount: 0,
-        notes: "",
-      };
-    }
-
-    sessions.set(sessionId, { profile, history });
   }
-  return sessions.get(sessionId)!;
+
+  // 3. Fallback to a brand new profile
+  if (!profile) {
+    profile = {
+      clientId: sessionId,
+      goals: [],
+      challenges: [],
+      interests: [],
+      financialConcerns: [],
+      healthConcerns: [],
+      familyReferences: [],
+      lifeEvents: [],
+      preferredTone: "friendly",
+      previousQuestions: [],
+      timelineEvents: [],
+      intentHistory: [],
+      conversationCount: 0,
+      notes: "",
+    };
+  }
+
+  return { profile, history };
 }
 
 app.get("/ping", (req, res) => res.send("pong"));
