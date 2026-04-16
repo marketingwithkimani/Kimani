@@ -195,7 +195,7 @@ export async function generateResponse(
   // Add current message
   messages.push({
     role: "user",
-    content: message,
+    content: message + "\n\n(SYSTEM REMINDER: BE EXTREMELY BRIEF. MAX 2 LINES. NO BULLET POINTS)",
   });
 
   try {
@@ -236,11 +236,23 @@ export async function generateResponse(
       .replace(/<suggested_action>[\s\S]*?<\/suggested_action>/, "")
       .trim();
 
-    // SERVER-SIDE SAFETY NET: Limit to 5 bursts
-    const bursts = responseText.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
-    if (bursts.length > 5) {
-      responseText = bursts.slice(0, 5).join(" [BURST] ").trim();
+    // SERVER-SIDE SAFETY NET: Limit character length and bursts
+    let bursts = responseText.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
+    
+    // Strict max 4 bubbles
+    if (bursts.length > 4) {
+      bursts = bursts.slice(0, 4);
     }
+    
+    // Hard check length (prevent consultant-style paragraphs)
+    bursts = bursts.map(b => {
+      if (b.length > 250) {
+        return b.substring(0, 247).trim() + "...";
+      }
+      return b;
+    });
+    
+    responseText = bursts.join(" [BURST] ").trim();
 
     // Detect scheduled follow-ups from timeline events in memory
     const scheduledFollowUps: AIEngineOutput["scheduledFollowUps"] = [];

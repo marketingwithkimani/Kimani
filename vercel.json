@@ -1,6 +1,11 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/**/*": {
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/kimani-ai-core/(.*)", "destination": "/api" }
