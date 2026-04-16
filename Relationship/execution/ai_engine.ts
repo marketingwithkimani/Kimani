@@ -32,9 +32,9 @@ function getAnthropicClient() {
               ...params.messages.map((m: any) => ({ role: m.role, content: m.content }))
             ];
             const response = await axios.post("https://openrouter.ai/api/v1/chat/completions", {
-              model: "anthropic/claude-3.5-haiku",
+              model: "openai/gpt-4o-mini",
               messages: messagesWithSystem,
-              max_tokens: params.max_tokens,
+              max_tokens: params.max_tokens || 1000,
             }, {
               headers: {
                 "Authorization": "Bearer " + activeKey,
@@ -48,7 +48,7 @@ function getAnthropicClient() {
           }
         }
       } as any,
-      model: "anthropic/claude-3.5-haiku",
+      model: "openai/gpt-4o-mini",
     };
   }
   return { client: new Anthropic({ apiKey: activeKey }), model: "claude-3-5-sonnet-latest" };
