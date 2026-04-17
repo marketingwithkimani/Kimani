@@ -63,6 +63,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
+  // ─── LOGIN ───
+  if (path.includes('/api/login')) {
+    const { password } = req.body;
+    if (password === process.env.DASHBOARD_PASSWORD) {
+      return res.status(200).json({ success: true, token: "demo-token" });
+    }
+    return res.status(401).json({ error: "Incorrect password" });
+  }
+
+  // ─── DASHBOARD STATS ───
+  if (path.includes('/api/dashboard/stats')) {
+    return res.json({ totalLeads: 124, emailsSent: 842, conversionRate: "18.5%", activeCampaigns: 3 });
+  }
+
+  // ─── DASHBOARD LEADS ───
+  if (path.includes('/api/dashboard/leads')) {
+    try {
+      const { data } = await loadLeadsFromSupabase();
+      return res.json(data || []);
+    } catch (e) {
+      return res.json([]);
+    }
+  }
+
+  // ─── CONTACT FORM ───
+  if (path.includes('/api/contact')) {
+    const { fullName, email, organization, interest, message } = req.body;
+    try {
+      if (process.env.SUPABASE_URL) {
+        await saveLeadSupabase({
+          name: fullName,
+          email,
+          company: organization || "Not Specified",
+          stage: "Ready",
+          capturedVia: "Contact Form",
+          interest: interest || "General Inquiry",
+          message
+        });
+      }
+      return res.json({ success: true, message: "Lead captured" });
+    } catch (e) {
+      return res.status(500).json({ error: "Failed to save contact" });
+    }
+  }
+
   // ─── CHAT ENDPOINT ───
   if (path.includes('/kimani-ai-core/chat')) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

@@ -90,32 +90,32 @@ const POSITION_DELAYS: Record<string, number> = {
 
 // ─── Step 1: Sales Intelligence Brain — Strategy ─────────────
 
-const STRATEGY_PROMPT = `You are the Sales Intelligence Brain for an email campaign system.
+const STRATEGY_PROMPT = `You are a high-level Sales Intelligence Strategist. 
 
-Your job: analyze a prospect and determine the optimal email strategy. You NEVER write emails. You only produce strategic analysis.
+Your philosophy is a hybrid of:
+- Don Draper: Emotional, evocative, focusing on the "quiet realization."
+- Myron Golden: Transformation-focused, value clarity, logical decision framing.
+- African-Aware: Simple, relatable, avoiding over-polished "Western" marketing hype.
+
+Your job: Analyze a prospect and determine the optimal strategic angle. You NEVER write emails. You only produce strategic analysis.
 
 Given a prospect profile and campaign position, produce a JSON strategy:
 
 {
-  "prospectStage": "<cold|curious|interested|considering|ready|converted|dormant>",
-  "campaignPosition": "<position>",
-  "persuasionAngle": "<the specific angle to use — what will resonate with this person?>",
-  "conversionObjective": "<what action should this email drive?>",
-  "callToAction": "<specific CTA text>",
-  "toneGuidance": "<how should the email feel? specific tone direction>",
-  "avoidList": ["<things to NOT do in this email>"],
-  "subjectLineApproach": "<strategy for the subject line>"
+  "prospectStage": "cold|curiosity|exploration|evaluation|consideration|ready|converted",
+  "painHook": "<What is the one specific observation or pain point that will trigger immediate recognition?>",
+  "abtNarrative": {
+    "and": "<The current context or desire they have>",
+    "but": "<The real problem or barrier holding them back>",
+    "therefore": "<The transformation or logical next step we provide>"
+  },
+  "oneBelief": "<The single belief they must internalize (e.g., 'Lead loss is the real problem, not lead gen')>",
+  "persuasionAngle": "<The emotional 'Don Draper' hook>",
+  "conversionObjective": "<Transformation goal>",
+  "callToAction": "<The 'Push-Pull' closing logic (e.g., 'Not sure if you're ready, but if so...')>",
+  "toneGuidance": "Clear, Emotional, Calm confidence, Human",
+  "avoidList": ["corporate jargon", "polished Western tone", "asking for a meeting too early"]
 }
-
-RULES:
-- Email 1 (curiosity_trigger): Focus on observation + curiosity. No pitch. Goal: get attention.
-- Email 2 (insight_expansion): Deepen interest. Explain the core idea more clearly.
-- Email 3 (strategic_perspective): Position authority. Share useful insight.
-- Email 4 (direct_offer): Push toward conversation. Offer demo/call.
-- Email 5 (final_close): Create psychological closure. Often triggers delayed replies.
-
-Never suggest spam trigger words (limited time, amazing, huge opportunity, don't miss).
-Always maintain professional credibility.
 
 Respond ONLY with valid JSON.`;
 
@@ -127,26 +127,13 @@ async function generateStrategy(
   contextParts.push(`PROSPECT:
 Name: ${input.prospect.name || "Unknown"}
 Company: ${input.prospect.companyName || "Unknown"}
-Website: ${input.prospect.companyUrl || "Unknown"}
-Industry: ${input.prospect.industry || "Unknown"}
-Role: ${input.prospect.role || "Unknown"}
-Stage: ${input.prospect.stage}
 Observations: ${input.prospect.observations.join(", ") || "None"}
-Pain Points: ${input.prospect.painPoints.join(", ") || "None"}
-Emails Sent: ${input.prospect.emailsSent}
-Emails Opened: ${input.prospect.emailsOpened}
-Replied: ${input.prospect.emailsReplied}`);
+Pain Points: ${input.prospect.painPoints.join(", ") || "None"}`);
 
   contextParts.push(`CAMPAIGN CONTEXT:
 Position: ${input.campaignPosition}
-Product/Service: ${input.productOrService}
 Value Proposition: ${input.valueProposition}
-Company: ${input.companyName}
 Sender: ${input.senderName}, ${input.senderRole}`);
-
-  if (input.additionalContext) {
-    contextParts.push(`ADDITIONAL CONTEXT:\n${input.additionalContext}`);
-  }
 
   try {
     const { client: anthropic, model } = getAnthropicClient();
@@ -158,85 +145,66 @@ Sender: ${input.senderName}, ${input.senderRole}`);
     });
 
     const text = response.content[0].type === "text" ? response.content[0].text : "";
-    return EmailStrategy.parse(JSON.parse(text));
+    return JSON.parse(text);
   } catch (error) {
     console.error("Strategy generation failed, using defaults:", error);
     return {
       prospectStage: input.prospect.stage,
-      campaignPosition: input.campaignPosition,
-      persuasionAngle: "General value proposition",
-      conversionObjective: "Get a response",
-      callToAction: "Would love to chat if you're open to it.",
-      toneGuidance: "Professional but warm. Like one professional reaching out to another.",
-      avoidList: ["spam language", "aggressive tone", "over-promising"],
-      subjectLineApproach: "Curiosity + professionalism",
-    };
+      painHook: "Leads going quiet",
+      abtNarrative: { and: "getting leads", but: "they disappear", therefore: "nurture system" },
+      oneBelief: "Lead loss is the real problem",
+      persuasionAngle: "Building lasting systems",
+      conversionObjective: "Insight recognition",
+      callToAction: "If you're ready, let's talk. If not, no pressure.",
+      toneGuidance: "Human and calm",
+      avoidList: ["marketing hype", "corporate jargon"],
+      subjectLineApproach: "Pain + Curiosity"
+    } as any;
   }
 }
 
 // ─── Step 2: Relationship Brain — Email Writing ──────────────
 
 function buildEmailWriterPrompt(
-  strategy: EmailStrategy,
+  strategy: any,
   input: EmailEngineInput
 ): string {
-  return `You are a skilled relationship-focused email writer. You write emails that feel personally crafted by a thoughtful professional — NOT by a marketing team or AI.
+  return `You are a world-class relationship-focused copywriter. You write emails that feel personally crafted by a thoughtful professional — NOT by a system.
 
-SENDER IDENTITY:
-You are ${input.senderName}, ${input.senderRole} at ${input.companyName}.
+CORE VOICE:
+- Tone: ${strategy.toneGuidance} (Clear, Emotional, Calm confidence, Human)
+- Philosophy: 70% Professional / 30% Relaxed. Simple English. No hype.
+- NEVER start with "I hope you're doing well."
+- AVOID: Corporate jargon, polished Western marketing tone.
 
-STRATEGIC DIRECTION (from internal analysis — never reveal):
-Persuasion Angle: ${strategy.persuasionAngle}
-Conversion Objective: ${strategy.conversionObjective}
-CTA: ${strategy.callToAction}
-Tone: ${strategy.toneGuidance}
-Subject Line Approach: ${strategy.subjectLineApproach}
-AVOID: ${strategy.avoidList.join(", ")}
+MANDATORY EMAIL STRUCTURE (FOLLOW THIS):
+1. SUBJECT LINE: PAIN + CURIOSITY (Short, direct, no hype. E.g., "Quick one — do your leads go quiet?")
+2. OPENING: HUMAN ENTRY (Casual, respectful. E.g., "Hey — quick one 🙂")
+3. PAIN-FIRST HOOK: Trigger recognition by stating what they are missing/doing wrong.
+4. ABT NARRATIVE:
+   - AND: ${strategy.abtNarrative.and}
+   - BUT: ${strategy.abtNarrative.but}
+   - THEREFORE: ${strategy.abtNarrative.therefore}
+5. ONE BELIEF (IMPLICIT): Communicate that ${strategy.oneBelief}.
+6. MECHANISM: Describe how it works simply (No AI/technical jargon).
+7. COST OF NO: Subtle reality check (E.g., "Every day they don't hear from you, they move on").
+8. PUSH-PULL CLOSE: ${strategy.callToAction} (Calm detachment. No pressure).
 
 PROSPECT CONTEXT:
 Name: ${input.prospect.name || "there"}
 Company: ${input.prospect.companyName || "your company"}
-Website: ${input.prospect.companyUrl || "N/A"}
-Industry: ${input.prospect.industry || "N/A"}
-Role: ${input.prospect.role || "N/A"}
-Observations: ${input.prospect.observations.join("; ") || "None yet"}
-Pain Points: ${input.prospect.painPoints.join("; ") || "None identified"}
+Observations: ${strategy.painHook}
 
-WHAT YOU'RE OFFERING:
-${input.productOrService}
-Value: ${input.valueProposition}
-
-EMAIL STRUCTURE (follow this flow):
-${getStructureForPosition(input.campaignPosition)}
-
-ABSOLUTE TONE RULES:
-- Sound like one professional contacting another professional
-- Professional structure + human personality
-- NEVER start with "I hope you're doing well" or "I hope this finds you well"
-- NEVER use spam words (limited time, amazing offer, huge opportunity, don't miss)
-- NEVER use corporate buzzwords (synergy, leverage, streamline, cutting-edge)
-- NEVER over-validate or be sycophantic
-- Vary sentence length — some short, some longer
-- Vary paragraph size — some one-line, some 2-3 sentences
-- Use natural phrases: "quick thought", "something I noticed", "figured I'd reach out"
-- Keep it concise — most emails should be 80-150 words
-- The email must pass the "would a real person send this?" test
-
-PATTERN DISTORTION:
-- Do NOT write symmetrical paragraphs (same length, same structure)
-- Occasionally use fragments
-- Mix formal and slightly informal language naturally
-- Some emails should feel shorter than expected
-- Never bullet-point everything
+SENDER:
+Name: ${input.senderName}
+Role: ${input.senderRole} at ${input.companyName}
 
 OUTPUT FORMAT:
 Respond with JSON:
 {
   "subjectLine": "<subject>",
-  "body": "<full email body including greeting and signature>",
-  "closingName": "${input.senderName}",
-  "patternBreakers": ["<list of human-feel techniques used>"],
-  "estimatedReadTime": "<X seconds>"
+  "body": "<full email body>",
+  "closingName": "${input.senderName}"
 }`;
 }
 
