@@ -68,8 +68,24 @@ function buildSystemPrompt(
   clientProfile: ClientProfile | null,
   intentAnalysis: IntentAnalysis,
   variability: VariabilityDirective,
-  momentum?: MomentumState
+  momentum?: MomentumState,
+  discoveryDirective?: string
 ): string {
+  if (discoveryDirective) {
+    return `You are the Discovery Specialist for Marketing with Kimani.
+${discoveryDirective}
+
+CORE RULES:
+- FOLLOW THE 6 QUESTIONS EXACTLY.
+- ASK ONLY ONE QUESTION AT A TIME.
+- Acknowledge and mirror the user briefly, then move to the next question.
+- DO NOT EXPLORE OR DEEP DIVE.
+- DO NOT ASKS EXTRA QUESTIONS outside the 6 provided.
+- NO BULLET POINTS. NO LIKES.
+- USE [BURST] to split response into 2-3 bubbles.
+- End immediately after [DISCOVERY_COMPLETE].`;
+  }
+
   const countryContext = clientProfile?.country 
     ? `The user is based in ${clientProfile.country}. Adapt language to feel locally relatable.` 
     : "";
@@ -167,7 +183,7 @@ export async function generateResponse(
   // HARD-PINNED GREETING: Ensure the first impression is flawless
   if (message === "[CLIENT_LANDED_ON_PAGE]") {
     return {
-      response: "hey, welcome 👋🏾 [BURST] glad you found the middle space [BURST] it's where most of the real thinking happens, right? [BURST] quick one — what are you trying to improve in your business right now? [BURST] and where are you based?",
+      response: "hey, welcome 👋🏾 [BURST] glad you're here. I have 6 small questions to help me understand your business so I can build the right strategy [BURST] I'll be very brief. [BURST] To get us started: could you describe your main product or service in one simple sentence?",
       intent: {
         intentScore: 30,
         stage: "curiosity",
@@ -175,11 +191,11 @@ export async function generateResponse(
         buyingSignals: [],
         decisionReadiness: 10,
         knowledgeLevel: "beginner",
-        suggestedMove: "Establish rapport",
-        avoid: "Don't push"
+        suggestedMove: "Start discovery",
+        avoid: "Don't wander"
       } as IntentAnalysis,
-      discoverySummary: "Establishing rapport...",
-      suggestedNextAction: "Continue discovery.",
+      discoverySummary: "Starting discovery session...",
+      suggestedNextAction: "Ask Q1.",
       memoryUpdates: {},
       scheduledFollowUps: [],
     };
@@ -200,12 +216,22 @@ export async function generateResponse(
     avoid: "Sales pressure"
   } as IntentAnalysis;
 
+  let discoveryDirective: string | undefined;
+  let cleanMessage = message;
+
+  if (message.startsWith("[INTERNAL_SYSTEM_DIRECTIVE]:")) {
+    discoveryDirective = message.replace("[INTERNAL_SYSTEM_DIRECTIVE]:", "").trim();
+    // Don't leak the directive into history as a user message
+    cleanMessage = "Let's start the discovery.";
+  }
+
   const systemPrompt = buildSystemPrompt(
     personality,
     clientProfile,
-    defaultIntent, // Passing default to prompt builder for structure
+    defaultIntent,
     variability,
-    momentum
+    momentum,
+    discoveryDirective
   );
 
   // Build Claude message history
@@ -222,7 +248,7 @@ export async function generateResponse(
   // Add current message
   messages.push({
     role: "user",
-    content: message + "\n\n(REMINDER: Start with <strategist_analysis> JSON block, then your human message)",
+    content: cleanMessage + "\n\n(REMINDER: Start with <strategist_analysis> JSON block, then your human message)",
   });
 
   try {
