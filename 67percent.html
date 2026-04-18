@@ -307,12 +307,15 @@
     /* ── LEAD MODAL ── */
     #leadModal {
       display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 5000;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100vh !important;
+      z-index: 99999 !important;
       overflow-y: auto;
       padding: 2rem;
-      background: rgba(0, 0, 0, 0.92);
+      background: rgba(0, 0, 0, 0.94);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
       align-items: center;
@@ -430,6 +433,66 @@
   </style>
 </head>
 <body>
+
+<!-- ══ LEAD CAPTURE MODAL ══════════════════════════════════════ -->
+<div id="leadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="lead-modal-box">
+    <button class="modal-close" onclick="closeLeadModal()" aria-label="Close">&times;</button>
+
+    <!-- FORM STATE -->
+    <div id="modalForm">
+      <div class="seg-label" style="margin-bottom:1rem;">The 67% Framework</div>
+      <h3 id="modalTitle">Let's Start The Conversation</h3>
+      <p class="modal-sub">Leave your details and we'll show you exactly where your market is and how to reach the 67% your competitors are ignoring.</p>
+
+      <form id="leadCaptureForm" novalidate>
+        <div class="lead-field">
+          <label for="lf-name">Full Name *</label>
+          <input type="text" id="lf-name" name="name" placeholder="John Kamau" required autocomplete="name">
+        </div>
+        <div class="lead-field">
+          <label for="lf-email">Email Address *</label>
+          <input type="email" id="lf-email" name="email" placeholder="john@company.co.ke" required autocomplete="email">
+        </div>
+        <div class="lead-field">
+          <label for="lf-phone">Phone Number *</label>
+          <input type="tel" id="lf-phone" name="phone" placeholder="+254 7XX XXX XXX" required autocomplete="tel">
+        </div>
+        <div class="lead-field">
+          <label for="lf-country">Country *</label>
+          <select id="lf-country" name="country" required>
+            <option value="" disabled selected>Select your country...</option>
+            <option>Kenya</option>
+            <option>Uganda</option>
+            <option>Tanzania</option>
+            <option>Rwanda</option>
+            <option>Ethiopia</option>
+            <option>Nigeria</option>
+            <option>Ghana</option>
+            <option>South Africa</option>
+            <option>Zimbabwe</option>
+            <option>Zambia</option>
+            <option>Botswana</option>
+            <option>Namibia</option>
+            <option>Mozambique</option>
+            <option>Other Africa</option>
+            <option>Outside Africa</option>
+          </select>
+        </div>
+        <button type="submit" class="lead-submit" id="leadSubmitBtn">Show Me the 67% Strategy →</button>
+      </form>
+      <p class="modal-privacy">🔒 We never spam. Your details are used only to reach out personally.</p>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="lead-success" id="modalSuccess">
+      <div class="hero-icon">🎯</div>
+      <h4>You're In.</h4>
+      <p>Your details have been received. Kimani's team will reach out to you personally to walk you through the 67% framework as it applies to your specific market.</p>
+    </div>
+  </div>
+</div>
+
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
@@ -725,65 +788,6 @@
     </button>
   </div>
 </section>
-
-<!-- ══ LEAD CAPTURE MODAL ══════════════════════════════════════ -->
-<div id="leadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="lead-modal-box">
-    <button class="modal-close" onclick="closeLeadModal()" aria-label="Close">&times;</button>
-
-    <!-- FORM STATE -->
-    <div id="modalForm">
-      <div class="seg-label" style="margin-bottom:1rem;">The 67% Framework</div>
-      <h3 id="modalTitle">Let's Start The Conversation</h3>
-      <p class="modal-sub">Leave your details and we'll show you exactly where your market is and how to reach the 67% your competitors are ignoring.</p>
-
-      <form id="leadCaptureForm" novalidate>
-        <div class="lead-field">
-          <label for="lf-name">Full Name *</label>
-          <input type="text" id="lf-name" name="name" placeholder="John Kamau" required autocomplete="name">
-        </div>
-        <div class="lead-field">
-          <label for="lf-email">Email Address *</label>
-          <input type="email" id="lf-email" name="email" placeholder="john@company.co.ke" required autocomplete="email">
-        </div>
-        <div class="lead-field">
-          <label for="lf-phone">Phone Number *</label>
-          <input type="tel" id="lf-phone" name="phone" placeholder="+254 7XX XXX XXX" required autocomplete="tel">
-        </div>
-        <div class="lead-field">
-          <label for="lf-country">Country *</label>
-          <select id="lf-country" name="country" required>
-            <option value="" disabled selected>Select your country...</option>
-            <option>Kenya</option>
-            <option>Uganda</option>
-            <option>Tanzania</option>
-            <option>Rwanda</option>
-            <option>Ethiopia</option>
-            <option>Nigeria</option>
-            <option>Ghana</option>
-            <option>South Africa</option>
-            <option>Zimbabwe</option>
-            <option>Zambia</option>
-            <option>Botswana</option>
-            <option>Namibia</option>
-            <option>Mozambique</option>
-            <option>Other Africa</option>
-            <option>Outside Africa</option>
-          </select>
-        </div>
-        <button type="submit" class="lead-submit" id="leadSubmitBtn">Show Me the 67% Strategy →</button>
-      </form>
-      <p class="modal-privacy">🔒 We never spam. Your details are used only to reach out personally.</p>
-    </div>
-
-    <!-- SUCCESS STATE -->
-    <div class="lead-success" id="modalSuccess">
-      <div class="hero-icon">🎯</div>
-      <h4>You're In.</h4>
-      <p>Your details have been received. Kimani's team will reach out to you personally to walk you through the 67% framework as it applies to your specific market.</p>
-    </div>
-  </div>
-</div>
 
 <!-- ══ FOOTER ═════════════════════════════════════════════════ -->
 <footer>
