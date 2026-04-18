@@ -851,26 +851,41 @@
 
   // ─── LEAD MODAL ─────────────────────────────────────────────────
   function openLeadModal() {
-    document.getElementById('leadModal').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    const modal = document.getElementById('leadModal');
+    const mForm = document.getElementById('modalForm');
+    const mSucc = document.getElementById('modalSuccess');
+    if (modal) {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Safety reset to ensure form shows
+      if (mForm) mForm.style.display = 'block';
+      if (mSucc) mSucc.style.display = 'none';
+    }
   }
+
   function closeLeadModal() {
-    document.getElementById('leadModal').classList.remove('open');
-    document.body.style.overflow = '';
+    const modal = document.getElementById('leadModal');
+    if (modal) {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
   }
-  document.getElementById('leadModal').addEventListener('click', function(e) {
-    if (e.target === this) closeLeadModal();
-  });
+
+  const modalEl = document.getElementById('leadModal');
+  if (modalEl) {
+    modalEl.addEventListener('click', function(e) {
+      if (e.target === this) closeLeadModal();
+    });
+  }
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLeadModal(); });
 
-  // ─── SUPABASE (safe init — page works even without credentials) ──
-  // Replace these two values with your Supabase project URL and anon key
-  const SUPABASE_URL  = 'YOUR_SUPABASE_PROJECT_URL';
-  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+  // ─── SUPABASE CONFIG ─────────────────────────────────────────────
+  const SUPABASE_URL  = 'https://bqcwevfjwpfohblaerou.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxY3dldmZqd3Bmb2hibGFlcm91Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMzUyODQsImV4cCI6MjA5MTkxMTI4NH0.8cGAKXLScE4fk_0LdIf19Nt5G5WO5H6Qf68zT7McUTo';
 
   let sbClient = null;
   try {
-    if (SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL' && window.supabase) {
+    if (window.supabase) {
       sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
     }
   } catch(e) {
@@ -878,45 +893,47 @@
   }
 
   // ─── FORM SUBMISSION ─────────────────────────────────────────────
-  document.getElementById('leadCaptureForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const name    = document.getElementById('lf-name').value.trim();
-    const email   = document.getElementById('lf-email').value.trim();
-    const phone   = document.getElementById('lf-phone').value.trim();
-    const country = document.getElementById('lf-country').value;
+  const lfForm = document.getElementById('leadCaptureForm');
+  if (lfForm) {
+    lfForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name    = document.getElementById('lf-name').value.trim();
+      const email   = document.getElementById('lf-email').value.trim();
+      const phone   = document.getElementById('lf-phone').value.trim();
+      const country = document.getElementById('lf-country').value;
 
-    if (!name || !email || !phone || !country) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-
-    const btn = document.getElementById('leadSubmitBtn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
-
-    const leadData = { name, email, phone, country, source: 'The 67% Page', created_at: new Date().toISOString() };
-
-    try {
-      if (sbClient) {
-        const { error } = await sbClient.from('leads_67').insert([leadData]);
-        if (error) console.error('Supabase insert error:', error);
-      } else {
-        // Fallback: save lead locally until Supabase is configured
-        const saved = JSON.parse(localStorage.getItem('kimani_67_leads') || '[]');
-        saved.push(leadData);
-        localStorage.setItem('kimani_67_leads', JSON.stringify(saved));
-        console.log('Lead saved locally (Supabase not yet configured):', leadData);
+      if (!name || !email || !phone || !country) {
+        alert('Please fill in all required fields.');
+        return;
       }
-    } catch(err) {
-      console.error('Lead capture error:', err);
-    }
 
-    // Always show success to the user
-    document.getElementById('modalForm').style.display = 'none';
-    document.getElementById('modalSuccess').style.display = 'block';
-    btn.disabled = false;
-    btn.textContent = 'Show Me the 67% Strategy →';
-  });
+      const btn = document.getElementById('leadSubmitBtn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      const leadData = { name, email, phone, country, source: 'The 67% Page', created_at: new Date().toISOString() };
+
+      try {
+        if (sbClient) {
+          const { error } = await sbClient.from('leads_67').insert([leadData]);
+          if (error) console.error('Supabase insert error:', error);
+        } else {
+          // Fallback: save lead locally
+          const saved = JSON.parse(localStorage.getItem('kimani_67_leads') || '[]');
+          saved.push(leadData);
+          localStorage.setItem('kimani_67_leads', JSON.stringify(saved));
+        }
+      } catch(err) {
+        console.error('Lead capture error:', err);
+      }
+
+      // Always show success to the user
+      document.getElementById('modalForm').style.display = 'none';
+      document.getElementById('modalSuccess').style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Show Me the 67% Strategy →';
+    });
+  }
 </script>
 
 <script src="js/main.js"></script>
