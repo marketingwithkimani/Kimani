@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relationship Engine | Building Trust at Scale | Marketing with Kimani</title>
-  <meta name="description" content="The Relationship Engine is a market behavior system that earns the position where the sale naturally happens by building relationships at scale.">
+  <title>Relationship Engine | AI Agentic Growth in Africa | Marketing with Kimani</title>
+  <meta name="description" content="Deploy the Relationship Engine — an elite AI market behavior system that builds trust at scale for African businesses. Marketing with Kimani is a leading AI agentic company specializing in strategic growth across Africa.">
+  <meta name="keywords" content="AI Agentic Company, AI in Africa, Marketing in Africa, B2B Marketing Africa, Lead Generation Africa, Business Growth Africa, AI Strategy African Markets">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
   <style>
@@ -176,6 +177,34 @@
     .typing-indicator span { width: 6px; height: 6px; background: var(--clr-accent); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
     @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Handover Modal Styles */
+    #handoverModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0,0,0,0.95);
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .modal-content {
+      max-width: 500px;
+      padding: 3rem;
+      background: var(--clr-bg2);
+      border: 1px solid var(--clr-accent);
+      border-radius: 32px;
+      text-align: center;
+      animation: modalIn 0.6s cubic-bezier(0.2, 0, 0, 1);
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-content h3 { color: var(--clr-accent); margin-bottom: 1rem; }
+    .modal-content p { color: var(--clr-white); margin-bottom: 2rem; line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -393,7 +422,15 @@
       </div>
     </div>
   </div>
-</section>
+<!-- ══ HANDOVER MODAL ══════════════════════════════════════════ -->
+<div id="handoverModal">
+  <div class="modal-content">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+    <h3>Strategic Handover Initiated</h3>
+    <p>Everything is set. Our systems are processing your business profile. Kimani will review the Relationship Agent's report and reach out to you personally very soon.</p>
+    <button class="btn btn-primary" onclick="window.location.href='index.html'" style="width: 100%; justify-content: center;">Continue to Home</button>
+  </div>
+</div>
 
 <!-- ── SCRIPTS ── -->
 <script>
@@ -407,11 +444,34 @@ document.addEventListener('DOMContentLoaded', () => {
   localStorage.setItem('kimani_session_id', sessionId);
   
   function addMessage(role, text) {
+    if (!text) return;
+    
+    // Check for handover trigger
+    if (text.includes('[DISCOVERY_COMPLETE]')) {
+      showHandoverModal();
+      text = text.replace(/\[DISCOVERY_COMPLETE\]/g, '').trim();
+      if (!text) return; // Don't show empty message
+    }
+    
+    // Strip other internal markers
+    text = text.replace(/\[.*?\]/g, '').trim();
+    if (!text) return;
+
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role}`;
     msgDiv.textContent = text;
     chatMessages.appendChild(msgDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function showHandoverModal() {
+    const modal = document.getElementById('handoverModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  function closeHandoverModal() {
+    const modal = document.getElementById('handoverModal');
+    if (modal) modal.style.display = 'none';
   }
 
   function showTyping() {
