@@ -5,44 +5,61 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The 67% | Discover the Silent Majority | Marketing with Kimani</title>
   
-  <!-- SEO Blast: Marketing in Africa & AI Agency -->
-  <meta name="description" content="Discover the 67% of the African market your competitors can't see. Marketing with Kimani is a leading AI agentic company specializing in high-level marketing strategy and AI-driven growth for businesses across Africa.">
-  <meta name="keywords" content="Marketing in Africa, AI Agentic Company, AI in Africa, African Marketing Authority, Lead Generation Africa, B2B Marketing Africa, Marketing Strategy Kenya, AI Marketing Solutions">
+  <meta name="description" content="You're not struggling with marketing, you're struggling with timing. Discover how to stay with your market when they're not ready to buy yet.">
+  <meta name="keywords" content="Marketing in Africa, AI Agentic Company, AI in Africa, African Marketing Authority, Lead Generation Africa, B2B Marketing Africa">
   <meta name="author" content="Marketing with Kimani">
   
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
   <style>
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
+    :root {
+      --clr-bg-deep: #080808;
+      --clr-text-main: #e0e0e0;
+    }
+    body {
+      background-color: var(--clr-bg-deep);
+      color: var(--clr-text-main);
+      overflow-x: hidden;
+    }
+    .narrative-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 10rem 2rem;
+    }
+    .line {
+      font-family: var(--ff-head);
+      font-size: clamp(1.8rem, 4vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 3rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .line.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .line.accent { color: var(--clr-accent); }
+    .line.muted { color: var(--clr-muted); font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 500; }
+    .line.small { font-size: clamp(1.1rem, 1.8vw, 1.4rem); font-family: var(--ff-body); font-weight: 400; line-height: 1.8; margin-bottom: 2rem; color: #a0a0a0; }
+    
+    .spacer { height: 6rem; }
+    .section-break { margin: 8rem 0; border-top: 1px solid var(--clr-border); width: 100px; }
+
+    .market-story {
+      border-left: 2px solid var(--clr-accent);
+      padding-left: 2rem;
       margin: 4rem 0;
     }
-    .metric-card {
-      background: var(--clr-bg2);
-      border: 1px solid var(--clr-border);
-      padding: 2rem;
-      border-radius: 20px;
+    
+    .cta-block {
+      margin-top: 8rem;
       text-align: center;
-      transition: var(--transition);
     }
-    .metric-card:hover {
-      border-color: var(--clr-accent);
-      transform: translateY(-5px);
-    }
-    .metric-val {
-      font-size: 3rem;
-      font-weight: 800;
-      color: var(--clr-accent);
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .metric-label {
-      font-size: 0.9rem;
-      color: var(--clr-white);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+
+    [data-narrative] {
+      margin-bottom: 2rem;
     }
   </style>
 </head>
@@ -69,98 +86,141 @@
   </div>
 </nav>
 
-<section class="section" style="padding-top: 10rem;">
-  <div class="container">
-    <div class="section-header center" data-reveal>
-      <span class="badge">Market Insight</span>
-      <h1>Discover the 67% of Your Market <br><span class="text-accent">That Nobody Else Sees</span></h1>
-    </div>
+<div class="narrative-container">
+  
+  <div class="line" data-reveal>You’re Not Struggling With Marketing.</div>
+  <div class="line accent" data-reveal data-delay="1">You’re struggling with timing.</div>
+  <div class="line small" data-reveal data-delay="2">And more dangerously…</div>
+  <div class="line small" data-reveal data-delay="3">You’ve been taught timing by people who don’t even operate in your market.</div>
 
-    <div class="prose" style="max-width: 900px; margin: 0 auto; font-size: 1.2rem;" data-reveal>
-      <p><strong>You’re invisible.</strong></p>
-      <p>Not because you’re not working hard enough. Not because your service isn’t excellent. You’re invisible because, right now, you’re competing for the same 3% of customers that everyone else is chasing.</p>
-      
-      <p>While your competitors scramble for attention, trying to outbid or out-shout each other, there’s an entire world of buyers quietly forming decisions about who they’ll trust when they’re ready to buy.</p>
+  <div class="section-break" data-reveal></div>
 
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <span class="metric-val">3%</span>
-          <span class="metric-label">Actively Looking</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-val">7%</span>
-          <span class="metric-label">Open to You</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-val">30%</span>
-          <span class="metric-label">Aware of Offer</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-val">30%</span>
-          <span class="metric-label">Unconscious of Need</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-val">30%</span>
-          <span class="metric-label">Never Going to Buy</span>
-        </div>
-      </div>
+  <div class="line muted" data-reveal>Because Most Of What You’ve Learned… <br><span class="text-white">Wasn’t Built For You.</span></div>
+  <div class="line small" data-reveal>Most marketing playbooks you follow personally… were built in different realities. Different economies. Different buying behaviors. Different speeds of trust.</div>
 
-      <p>67% of your ideal customers aren’t shopping today. But they will. And when they do, they’ll remember the business that understood them before anyone else did.</p>
-      <p>The business that spoke to their needs before they even realized they had them. The business that made them feel seen, understood, and valued.</p>
-      
-      <p><strong>That business should be yours.</strong></p>
+  <div class="line" data-reveal>But here… things move differently.</div>
 
-      <p>Right now, however, you’re invisible to them. Your content is being ignored. Your ads are not clicking. Your message is falling on deaf ears because it doesn’t speak to the problems they haven’t even realized yet.</p>
-
-      <div class="insight-block">
-        <p>That’s where I come in. I help businesses uncover the 67%—the silent majority of their market—so they’re no longer invisible. I guide you to craft strategies that reach people before they start looking, positioning your business as the obvious choice when they’re ready to act.</p>
-      </div>
-
-      <h3>The Market Everyone Else Ignores</h3>
-      <p>Most businesses fail not because their product isn’t good, but because they misunderstand human psychology. They target the wrong people at the wrong time with the wrong message. They compete on price when trust and relationship are what truly drive conversions. They chase attention instead of commanding it.</p>
-
-      <p>I help companies understand how people actually make decisions, the invisible cues that guide choice, and the subtle patterns that turn prospects into lifelong clients.</p>
-
-      <p>This isn’t about tricks or gimmicks. It’s about understanding:</p>
-      <ul class="checklist" style="margin-bottom: 2rem;">
-        <li>Why people buy when they buy</li>
-        <li>What triggers trust</li>
-        <li>How to become the first brand someone thinks of when the moment to purchase arrives</li>
-      </ul>
-
-      <p>Once you understand this, your business stops chasing customers and starts being sought out by them. Your content stops competing for attention and starts commanding it.</p>
-
-      <h3>The Transformation</h3>
-      <p>When your business learns to speak to the 67%, everything changes: You stop being one option among many and become the obvious choice. You stop explaining your value and start demonstrating it naturally. You stop competing on price and start winning on psychology, trust, and timing.</p>
-      
-      <div class="card" style="margin: 3rem 0; background: var(--clr-accent); color: #0b0b0b;">
-        <h4 style="color: #0b0b0b">Imagine this:</h4>
-        <p style="color: #0b0b0b">Prospects reach out to you instead of you chasing them. They ask how to work with you instead of questioning why they should. They trust your expertise instead of bargaining over your prices.</p>
-      </div>
-
-      <p>This is not a theory. It’s a transformation that happens when you understand your market at the level most businesses ignore.</p>
-
-      <h3>What You Can’t Afford</h3>
-      <p>Another year of invisibility. Another year wasting effort on customers who are already claimed by competitors. Another year letting inferior or louder businesses dominate mindshare while your ideal clients make decisions in silence.</p>
-      
-      <p>The 67% are deciding right now who they’ll trust tomorrow. They are forming preferences. They are creating mental shortcuts. And every day your business remains invisible is another day they cement loyalty elsewhere.</p>
-
-      <div class="cta-section" style="margin-top: 5rem;">
-        <h2>Discover the 67% <br>Your Competitors Can’t See</h2>
-        <a href="work-with-me.html" class="btn btn-primary" style="margin-top: 1.5rem;">Schedule a Strategy Session Today</a>
-      </div>
-    </div>
+  <div class="market-story" data-reveal>
+    <p class="line small">Here, someone can think about buying land for 6 months.</p>
+    <p class="line small">Talk to friends. Ask family. Drive past the same plot three times. Save slowly. Doubt. Come back again.</p>
+    <p class="line" style="font-size: 2rem;">And only then… decide.</p>
   </div>
-</section>
 
-<footer style="margin-top: 5rem; padding: 4rem 0; border-top: 1px solid var(--clr-border);">
+  <div class="line muted" data-reveal>But the marketing you’ve been using?</div>
+  <div class="line small" data-reveal>It behaves like the decision happens in one moment.</div>
+  <div class="line accent" style="font-size: 1.8rem;" data-reveal>“Buy now.” “Limited offer.” “Last chance.”</div>
+  <div class="line small" data-reveal>That’s not how your market moves. And deep down… <span class="text-white">you already know that.</span></div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line accent" data-reveal>Let Me Show You Something You’ve Already Lived.</div>
+  <div class="line small" data-reveal>Not as a business owner. As yourself.</div>
+  <div class="line small" data-reveal>Think about the last time you wanted something serious. Not small. Something that required sacrifice.</div>
+  <div class="line" style="font-size: 2.2rem;" data-reveal>A TV.</div>
+  <div class="line small" data-reveal>You didn’t just wake up and buy it. It started casually. Maybe you were at a friend’s place. You saw a bigger screen. Clearer picture. And you said: <span class="text-white">“Mine is getting old.”</span></div>
+
+  <div class="line small" data-reveal>That was the beginning. From that moment… you started noticing TVs everywhere.</div>
+  <div class="line small" data-reveal>Scrolling at night — one appears. Watching YouTube — another one shows. Passing a shop — you slow down a bit.</div>
+
+  <div class="line small" data-reveal>Then an ad comes. Clean. Sharp. Well designed.</div>
+  <div class="line accent" style="font-size: 1.4rem;" data-reveal>“Buy now.” “Best price.” “Limited stock.”</div>
+
+  <div class="line" data-reveal style="font-size: 2rem;">You pause. You look at it. You even imagine it in your sitting room.</div>
+  <div class="line accent" data-reveal>Then… you scroll.</div>
+  <div class="line small" data-reveal>Not because you didn’t want it. But because… <span class="text-white">you weren’t ready.</span></div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line" data-reveal>And Yet… You Still Bought Eventually.</div>
+  <div class="line small" data-reveal>Days later. Weeks later. Maybe even a month later. You bought. But not from that ad. Not from the one that tried to rush you. Not from the one that assumed your timing.</div>
+  <div class="line accent" data-reveal>You bought from the one that stayed with you.</div>
+  <div class="line small" data-reveal>The one that felt familiar. The one that somehow… understood your pace.</div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line accent" style="font-size: 3.5rem;" data-reveal>That Was You Inside The 67%.</div>
+  <div class="line small" data-reveal>Not lost. Not uninterested. Not a bad customer. Just… <span class="text-white">not ready yet.</span></div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line" data-reveal>Now Look At Your Own Business.</div>
+  <div class="line small" data-reveal>How many people see you every day… and do exactly what you did?</div>
+  <div class="line small" data-reveal>They see your post. They see your ad. They even like it. Then they scroll. And you assume: <span class="text-white">“They’re not serious.”</span></div>
+
+  <div class="line" data-reveal>But what if… they’re just where you were?</div>
+  <div class="line small" data-reveal>Thinking. Watching. Quietly moving closer.</div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line accent" data-reveal>Now Here’s Where It Gets Uncomfortable.</div>
+  <div class="line" style="font-size: 2rem;" data-reveal>If people are like this… if buying is a journey… if timing is everything…</div>
+  <div class="line" data-reveal>What Exactly Are You Saying To Them Right Now?</div>
+
+  <div class="line small" data-reveal>When they are just starting to think… <span class="text-white">What do they see from you?</span></div>
+  <div class="line small" data-reveal>When they are considering… <span class="text-white">What do you give them?</span></div>
+  <div class="line small" data-reveal>When they are not ready yet… but will be… <span class="text-white">How do you stay in their mind?</span></div>
+
+  <div class="line small" data-reveal>Is your content built for that stage? Or only for the final moment?</div>
+  <div class="line small" data-reveal>Because if all you ever say is: <span class="text-accent">“Buy now”, “DM me”, “Limited offer”</span>... Then you are only speaking to people who are already at the end. And ignoring everyone else.</div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line" data-reveal>So Ask Yourself Honestly.</div>
+  <div class="line small" data-reveal>What do you show someone who is not ready to buy today… but will be ready soon?</div>
+  <div class="line small" data-reveal>What do you say to someone who is interested… but still thinking?</div>
+  <div class="line small" data-reveal>What kind of message makes them remember you even after they scroll?</div>
+  <div class="line small" data-reveal>What kind of presence makes them feel like: <span class="text-white">“When I’m ready… I’ll go back to this one.”</span></div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line accent" data-reveal>Because that moment… that exact moment… is where businesses are chosen.</div>
+  <div class="line small" data-reveal>Not loudly. Not instantly. But quietly. Over time.</div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line" data-reveal>And If You Don’t Know How To Do That Yet…</div>
+  <div class="line accent" data-reveal>That’s the gap.</div>
+  <div class="line small" data-reveal>Not effort. Not consistency. But understanding how to exist inside the 67%.</div>
+
+  <div class="section-break" data-reveal></div>
+
+  <div class="line muted" data-reveal>Because Once You Understand That…</div>
+  <div class="line" data-reveal>You don’t chase customers. <span class="text-accent">You stay with them.</span></div>
+  <div class="line small" data-reveal>You don’t fight for attention. You become familiar. You don’t try to convince. You become the obvious choice.</div>
+
+  <div class="line accent" style="font-size: 3.5rem;" data-reveal>And That Changes Everything.</div>
+
+  <div class="cta-block" data-reveal>
+    <a href="relationship-engine.html" class="btn btn-primary" style="padding: 1.5rem 3rem; font-size: 1.2rem;">
+      👇🏽 Tell Me More About The 67%
+    </a>
+  </div>
+
+</div>
+
+<footer style="padding: 4rem 0; text-align: center; border-top: 1px solid var(--clr-border);">
   <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <p style="color: var(--clr-muted); font-size: 0.9rem;">&copy; 2026 Marketing with Kimani. The African Marketing Authority.</p>
-      <a href="index.html" class="text-accent">Back to Home</a>
-    </div>
+    <p style="color: var(--clr-muted); font-size: 0.9rem;">&copy; 2026 Marketing with Kimani. The African Marketing Authority.</p>
   </div>
 </footer>
+
+<script>
+  // Simple scroll reveal logic tailored for narrative flow
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('revealed');
+        }, index * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('[data-reveal]').forEach((el) => {
+    el.classList.add('line');
+    observer.observe(el);
+  });
+</script>
 
 <script src="js/main.js"></script>
 </body>
