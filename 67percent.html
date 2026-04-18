@@ -11,8 +11,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
   
-  <!-- Supabase SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
   <style>
     /* ── PAGE FOUNDATION ── */
@@ -316,30 +315,31 @@
       /* Full-screen overlay */
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 99999;
-      /* NO backdrop-filter — causes GPU freeze on mobile */
-      background: rgba(0, 0, 0, 0.88);
-      /* Center the box */
+      width: 100vw; height: 100vh;
+      z-index: 100000;
+      background: rgba(0, 0, 0, 0.92);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1rem;
       box-sizing: border-box;
+      pointer-events: none;
     }
     #leadModal.open {
       visibility: visible;
       opacity: 1;
+      /* Standard interaction when open */
+      pointer-events: auto;
     }
     .lead-modal-box {
-      background: #111;
-      border: 1px solid rgba(200,242,48,0.3);
-      border-radius: 20px;
-      max-width: 480px;
-      width: 100%;
-      padding: 2.5rem;
+      background: #0f0f0f;
+      border: 1px solid rgba(200,242,48,0.5);
+      border-radius: 24px;
+      max-width: 440px;
+      width: 95%;
+      padding: 1.8rem 2.2rem;
       position: relative;
-      z-index: 100000;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 20px rgba(200,242,48,0.1);
       color: #fff;
     }
     .modal-close {
@@ -358,7 +358,7 @@
     .lead-modal-box .modal-sub {
       color: #777;
       font-size: 0.95rem;
-      margin-bottom: 1.8rem;
+      margin-bottom: 1.2rem;
       line-height: 1.6;
     }
     .lead-field { margin-bottom: 1.1rem; }
@@ -442,9 +442,8 @@
 
     <!-- FORM STATE -->
     <div id="modalForm">
-      <div class="seg-label" style="margin-bottom:1rem;">The 67% Framework</div>
-      <h3 id="modalTitle">Let's Start The Conversation</h3>
-      <p class="modal-sub">Leave your details and we'll show you exactly where your market is and how to reach the 67% your competitors are ignoring.</p>
+      <h3 id="modalTitle" style="margin-top:0.5rem">Let's Start The Conversation</h3>
+
 
       <form id="leadCaptureForm" novalidate>
         <div class="lead-field">
@@ -784,7 +783,7 @@
     The 67% are deciding right now who they'll trust tomorrow. Every day you remain invisible is another day they cement loyalty elsewhere.
   </p>
   <div data-r data-d="3">
-    <button onclick="openLeadModal()" class="btn btn-primary" id="ctaLeadBtn" style="padding: 1.2rem 3rem; font-size: 1.1rem; border: none; cursor: pointer;">
+    <button onclick="openLeadModal(event)" class="btn btn-primary" id="ctaLeadBtn" style="padding: 1.2rem 3rem; font-size: 1.1rem; border: none; cursor: pointer; position: relative; z-index: 10;">
       👇🏽 Tell Me More About The 67%
     </button>
   </div>
@@ -855,20 +854,36 @@
   }, 600);
 
   // ─── LEAD MODAL ─────────────────────────────────────────────────
-  function openLeadModal() {
+  function openLeadModal(e) {
+    if (e) {
+       e.preventDefault();
+       e.stopPropagation();
+    }
     const modal = document.getElementById('leadModal');
     const mForm = document.getElementById('modalForm');
     const mSucc = document.getElementById('modalSuccess');
+    
     if (modal) {
+      // Force move to bottom of body to break out of any transform parents
+      document.body.appendChild(modal);
+      // Remove any leftover transition classes that break 'fixed'
+      document.body.classList.remove('page-transition');
+      
       modal.classList.add('open');
       if (mForm) mForm.style.display = 'block';
       if (mSucc) mSucc.style.display = 'none';
+      
+      // Lock scroll 
+      document.body.style.overflow = 'hidden';
     }
   }
 
   function closeLeadModal() {
     const modal = document.getElementById('leadModal');
-    if (modal) modal.classList.remove('open');
+    if (modal) {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
   }
 
   const modalEl = document.getElementById('leadModal');
