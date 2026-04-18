@@ -65,8 +65,8 @@ h4 { font-size: 1.25rem; font-weight: 600; }
 
 /* ── LAYOUT HELPERS ─────────────────────────────────────────── */
 .container { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
-.section   { padding: 7rem 0; }
-.section--sm { padding: 4rem 0; }
+.section   { padding: 4rem 0; }
+.section--sm { padding: 2.5rem 0; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
@@ -529,7 +529,7 @@ h4 { font-size: 1.25rem; font-weight: 600; }
 
 /* ── CONTENT PROSE ──────────────────────────────────────────── */
 .prose p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.85rem;
   font-size: 1rem;
   color: var(--clr-text);
   line-height: 1.85;

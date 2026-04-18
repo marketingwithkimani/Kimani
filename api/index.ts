@@ -8,8 +8,10 @@ import {
   loadConversationHistory as loadConversationHistorySupabase,
   saveClientProfile as saveClientProfileSupabase,
   logConversationMessage as logConversationMessageSupabase,
-  saveLead as saveLeadSupabase
+  saveLead as saveLeadSupabase,
+  loadLeadsFromSupabase
 } from "../Relationship/execution/supabase_memory.js";
+import { generateEmail } from "../Relationship/execution/email_engine.js";
 
 // CORS middleware
 const corsMiddleware = cors({ origin: '*' });
@@ -82,8 +84,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const { data } = await loadLeadsFromSupabase();
       return res.json(data || []);
-    } catch (e) {
+    } catch (e: any) {
+      console.error("Dashboard leads error:", e);
       return res.json([]);
+    }
+  }
+
+  // ─── POTENTIAL LEADS ───
+  if (path.includes('/api/dashboard/potential-leads')) {
+    // In a real setup, this would query a 'potential_leads' table
+    // For now, returning a sample to make the UI look alive
+    return res.json([
+      { id: "p1", company: "Zuberi Financial", location: "Nairobi, KE", strategy: "Brand Positioning", industry: "FinTech", discovery: "Scaling rapidly but lacking consistent relationship nurture." },
+      { id: "p2", company: "Lagos Logistics", location: "Lagos, NG", strategy: "Corporate Strategy", industry: "Logistics", discovery: "Heavy reliance on cold calls; needs 'insight-driven' trust builds." }
+    ]);
+  }
+
+  // ─── SEND EMAIL ───
+  if (path.includes('/api/leads/send-email')) {
+    const { prospectId, industry } = req.body;
+    try {
+      const result = await generateEmail({
+        prospect: { name: "Prospect", email: "client@example.com", companyName: "Target Co", observations: [industry], stage: "curiosity", emailsSent: 0 } as any,
+        campaignPosition: "curiosity_trigger",
+        valueProposition: "Relationship-Driven Growth",
+        senderName: "Kimani",
+        senderRole: "Lead Strategist",
+        companyName: "Marketing with Kimani"
+      });
+      return res.json({ success: true, email: result.email });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
     }
   }
 

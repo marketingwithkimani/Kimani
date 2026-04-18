@@ -3,10 +3,180 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relationship Engine | AI-Powered Client Engagement | Marketing with Kimani</title>
-  <meta name="description" content="The Relationship Engine is Marketing with Kimani's AI-powered client nurturing system, built to scale human trust, not replace it. Experience the future of client engagement.">
+  <title>Relationship Engine | Building Trust at Scale | Marketing with Kimani</title>
+  <meta name="description" content="The Relationship Engine is a market behavior system that earns the position where the sale naturally happens by building relationships at scale.">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
+  <style>
+    :root {
+      --clr-bg-deep: #050505;
+      --clr-accent: #c8f230;
+      --glass: rgba(255, 255, 255, 0.03);
+    }
+    body { background-color: var(--clr-bg-deep); }
+    
+    .narrative-section {
+      padding: 6rem 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .text-reveal-large {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin-bottom: 2rem;
+      color: var(--clr-white);
+    }
+    .sub-narrative {
+      font-size: 1.25rem;
+      color: var(--clr-muted);
+      max-width: 600px;
+      line-height: 1.6;
+    }
+    
+    .gap-visual {
+      height: 400px;
+      margin-top: 4rem;
+      background: linear-gradient(90deg, #111 0%, transparent 20%, transparent 80%, #111 100%),
+                  radial-gradient(circle at 50% 50%, rgba(200, 242, 48, 0.05) 0%, transparent 70%);
+      border-radius: 40px;
+      border: 1px solid var(--clr-border);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .gap-line-structure {
+      position: absolute;
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--clr-border) 0%, var(--clr-accent) 50%, var(--clr-border) 100%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .gap-node {
+      width: 60px;
+      height: 60px;
+      background: var(--clr-bg2);
+      border: 1px solid var(--clr-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--clr-muted);
+      position: relative;
+    }
+    .gap-node.active {
+      border-color: var(--clr-accent);
+      background: var(--clr-accent);
+      color: #0b0b0b;
+      box-shadow: 0 0 20px rgba(200, 242, 48, 0.4);
+    }
+    .gap-node::after {
+      content: attr(data-label);
+      position: absolute;
+      top: 70px;
+      white-space: nowrap;
+      font-size: 0.8rem;
+    }
+    .engine-float {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--clr-bg3);
+      border: 1px solid var(--clr-accent);
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      color: var(--clr-accent);
+      font-weight: 800;
+      font-family: var(--ff-head);
+      z-index: 5;
+      animation: float 4s infinite ease-in-out;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(-50%, -55%); }
+      50% { transform: translate(-50%, -45%); }
+    }
+
+    .stat-circle {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 1px solid var(--clr-accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: radial-gradient(circle, rgba(200, 242, 48, 0.1) 0%, transparent 80%);
+      margin: 0 auto;
+    }
+    .stat-circle .num { font-size: 5rem; font-weight: 900; color: var(--clr-accent); line-height: 1; }
+    .stat-circle .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--clr-white); }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+    .action-item {
+      padding: 2.5rem;
+      background: var(--glass);
+      border: 1px solid var(--clr-border);
+      border-radius: 32px;
+      transition: 0.4s;
+    }
+    .action-item:hover {
+      border-color: var(--clr-accent);
+      background: rgba(200, 242, 48, 0.02);
+    }
+    .action-item h4 { margin-top: 1rem; color: var(--clr-accent); }
+
+    /* ── CHAT DEMO STYLES ── */
+    .chat-demo-container {
+      max-width: 800px;
+      margin: 4rem auto 0;
+      background: var(--clr-bg2);
+      border: 1px solid var(--clr-border);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+    }
+    .chat-header {
+      padding: 1.5rem 2rem;
+      background: var(--clr-bg3);
+      border-bottom: 1px solid var(--clr-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .agent-avatar { width: 44px; height: 44px; background: var(--clr-accent); color: #0b0b0b; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+    .agent-name { font-weight: 700; color: var(--clr-white); font-size: 1.1rem; }
+    .agent-status { font-size: 0.8rem; color: var(--clr-accent); opacity: 0.8; }
+    .chat-messages { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+    .message { max-width: 80%; padding: 1rem 1.5rem; border-radius: 18px; line-height: 1.6; font-size: 0.95rem; animation: fadeInUp 0.4s ease forwards; }
+    .message.assistant { align-self: flex-start; background: var(--clr-bg3); color: var(--clr-white); border-bottom-left-radius: 4px; border: 1px solid var(--clr-border); }
+    .message.user { align-self: flex-end; background: var(--clr-accent); color: #0b0b0b; border-bottom-right-radius: 4px; }
+    .chat-input-area { padding: 1.5rem 2rem; background: var(--clr-bg3); border-top: 1px solid var(--clr-border); display: flex; gap: 1rem; }
+    #chatInput { flex: 1; background: var(--clr-bg2); border: 1px solid var(--clr-border); padding: 0.85rem 1.2rem; border-radius: 12px; color: var(--clr-white); outline: none; }
+    .typing-indicator { display: flex; gap: 4px; padding: 4px 0; }
+    .typing-indicator span { width: 6px; height: 6px; background: var(--clr-accent); border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
 </head>
 <body>
 
@@ -26,451 +196,197 @@
         <a href="work-with-me.html">Work With Me</a>
       </div>
       <div class="nav-cta">
-        <a href="work-with-me.html" class="btn btn-primary">
-          Work With Me
-          <span class="btn-icon">→</span>
-        </a>
+        <a href="work-with-me.html" class="btn btn-primary">Work With Me</a>
       </div>
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-        <span></span><span></span><span></span>
-      </button>
     </div>
   </div>
 </nav>
-<div class="mobile-nav" id="mobileNav">
-  <a href="index.html">Home</a>
-  <a href="67percent.html">The 67%</a>
-  <a href="relationship-engine.html">Relationship Engine</a>
-  <a href="strategy.html">Strategy</a>
-  <a href="work-with-me.html">Work With Me</a>
-</div>
 
-<!-- ══ PAGE HERO ════════════════════════════════════════════════ -->
-<section class="page-hero">
+<!-- ══ CHAPTER 1: THE TIMING PROBLEM ══════════════════════════ -->
+<section class="narrative-section">
   <div class="container">
-    <span class="badge">Psychological Framework</span>
-    <h1>Relationships Are the<br><span class="text-accent">Engine</span> of Growth</h1>
-    <p>Your campaigns are flawless. Your content is polished. Yet nothing moves. The problem isn't your content — it's that content alone cannot build the one thing that converts at scale: trust.</p>
-    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-      <a href="#demo" class="btn btn-primary">
-        Talk to the Agent
-        <span class="btn-icon">→</span>
-      </a>
-      <a href="work-with-me.html" class="btn btn-outline">Book a Demo</a>
+    <div data-reveal>
+      <h1 class="text-reveal-large">Most businesses think they have a marketing problem.</h1>
+      <h2 class="text-reveal-large" style="color: var(--clr-accent); opacity: 0.8;">They don't. They have a timing problem.</h2>
+      <p class="sub-narrative">Right now, only about 3% of your market is ready to buy. These are the people everyone fights over—the ones clicking "Buy Now."</p>
+    </div>
+    
+    <div class="grid-2" style="margin-top: 6rem;">
+      <div class="stat-circle" data-reveal>
+        <div class="num">3%</div>
+        <div class="label">Ready to Buy</div>
+      </div>
+      <div data-reveal data-delay="2" style="display: flex; align-items: center;">
+        <div class="prose">
+          <h3>But there is another group. A much bigger one.</h3>
+          <p><strong>67% of your potential customers are interested... but not ready yet.</strong> They're thinking. They're considering. They're watching. But they're not buying. Not today.</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ══ MARQUEE ═══════════════════════════════════════════════════ -->
-<div class="marquee-strip">
-  <div class="marquee-track">
-    <span>Scale Human Trust</span><span class="dot">✦</span>
-    <span>AI That Listens, Not Just Responds</span><span class="dot">✦</span>
-    <span>Nurture. Convert. Retain.</span><span class="dot">✦</span>
-    <span>Relationships At Scale</span><span class="dot">✦</span>
-    <span>No Scripts. Real Intelligence.</span><span class="dot">✦</span>
-    <span>Scale Human Trust</span><span class="dot">✦</span>
-    <span>AI That Listens, Not Just Responds</span><span class="dot">✦</span>
-    <span>Nurture. Convert. Retain.</span><span class="dot">✦</span>
-    <span>Relationships At Scale</span><span class="dot">✦</span>
-    <span>No Scripts. Real Intelligence.</span><span class="dot">✦</span>
+<!-- ══ CHAPTER 2: THE GAP ══════════════════════════════════════ -->
+<section class="narrative-section" style="background: var(--clr-bg2);">
+  <div class="container">
+    <div data-reveal>
+      <h2 class="text-reveal-large">Between "Interest" and "Decision," nothing happens.</h2>
+      <p class="sub-narrative">A lead comes in. There's a follow-up or two. Then silence. That person didn't say no. They just... disappeared. Not because they weren't a fit, but because time passed without connection.</p>
+    </div>
+    
+    <div class="gap-visual" data-reveal>
+      <div class="gap-line-structure">
+        <div class="gap-node" data-label="Discovery">01</div>
+        <div class="gap-node" data-label="Interest">02</div>
+        <div class="gap-node" data-label="Nurturing">03</div>
+        <div class="gap-node active" data-label="Trust Bridge">04</div>
+        <div class="gap-node" data-label="Purchase">05</div>
+      </div>
+      <div class="engine-float" style="background: var(--clr-bg1); border-color: var(--clr-accent);">RELATIONSHIP ENGINE</div>
+    </div>
   </div>
-</div>
+</section>
 
-<!-- ══ THE PAIN: WHAT EVERYONE SEES BUT FEW UNDERSTAND ══════════ -->
-<section class="section">
+<!-- ══ CHAPTER 3: PRESENCE OVER MARKETING ══════════════════════ -->
+<section class="narrative-section">
   <div class="container">
     <div class="grid-2">
       <div data-reveal>
-        <span class="badge">The Pain</span>
-        <h2>Your Campaigns Are Perfect. But Nothing Moves.</h2>
-        <div class="divider"></div>
-        <div class="prose">
-          <p>You have tried every tactic. Polished videos, culturally tuned messages, high-production photography. You have aligned with influencers. You have run promotions. You have gone live. You have hosted events. And still, conversions remain stubborn. The gap between attention and action feels impossible to close.</p>
-          <p>Your audience is drowning. They scroll past hundreds of posts every day. They have seen everything. They have heard every promise. They are not ignoring you — they are numb. Content alone no longer commands decision. Because content is everywhere. <strong>Trust is not.</strong></p>
-          <p>The real gap in your funnel is not between awareness and consideration. It is between consideration and conviction. And the only thing that closes that gap — the only bridge that has ever closed it in every market and every culture — is a relationship that makes the buyer feel genuinely understood.</p>
-        </div>
+        <h2 class="text-reveal-large" style="font-size: 3.5rem;">People don't buy when you're ready to sell.</h2>
+        <h3 class="text-reveal-large" style="font-size: 3.5rem; color: var(--clr-accent);">They buy when they feel ready to trust.</h3>
       </div>
       <div data-reveal data-delay="2">
-        <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-icon">📉</div>
-          <h4>Views Rise. Sales Stay Flat.</h4>
-          <p>Engagement ticks up. Follower counts grow. But the people watching aren't being nurtured into conviction. They are just watching.</p>
-        </div>
-        <div class="card" style="margin-bottom:1.5rem">
-          <div class="card-icon">💸</div>
-          <h4>Leads Vanish After Contact</h4>
-          <p>Most conversations die. Most leads go cold. Not because the product is wrong — but because no one followed up in a way that felt human.</p>
-        </div>
-        <div class="card">
-          <div class="card-icon">🤖</div>
-          <h4>Automation Feels Robotic</h4>
-          <p>The chatbots and email sequences your team uses feel transactional. They answer questions, but they don't build relationships.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ THE SECRET INSIGHT ════════════════════════════════════════ -->
-<section class="section" style="background: var(--clr-bg2);">
-  <div class="container">
-    <div class="section-header center" data-reveal>
-      <span class="badge">The Secret</span>
-      <h2>The Small Competitor Who Beats You Without a Budget</h2>
-      <div class="divider"></div>
-    </div>
-    <div style="max-width:860px; margin:3rem auto 0;" data-reveal>
-      <div class="prose">
-        <p>You have noticed it. That smaller competitor who is not flashy. Who does not have a high-budget marketing team. Who is not even in the best location. Yet somehow, they move their products. They gain loyal clients. They grow quarter on quarter while you increase your ad spend and wonder why the returns keep diminishing.</p>
-        <p>It is not luck. It is not better content. It is relationships. It is the fact that they know their clients by name. They remember details. They follow up. They check in. They make people feel — in a world that increasingly treats everyone as a transaction — that they genuinely matter.</p>
-        <p>Think about the last time you bought something not because it was cheaper or technically superior, but because someone you trusted offered it. Maybe it was a friend. Maybe it was a colleague whose judgment you respected. You skipped the comparisons, the research, the endless reviews. You bought because trust made the decision obvious. That is the channel most corporations leave entirely unattended.</p>
-      </div>
-      <div class="insight-block">
-        <p>"Trust is not a soft concept — it is the most measurable driver of conversion, retention, and referral that exists. The company that scales trust, scales everything."</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ THE TEASE: WHAT IF YOU COULD SCALE TRUST ═════════════════ -->
-<section class="section">
-  <div class="container">
-    <div class="grid-2">
-      <div data-reveal>
-        <span class="badge">The Vision</span>
-        <h2>Imagine Scaling That Trust to Every Lead, Every Touchpoint</h2>
-        <div class="divider"></div>
         <div class="prose">
-          <p>What if you could build that same depth of relationship, the kind that makes a buyer feel genuinely seen and understood, at scale? Not a robotic AI assistant that spews scripted responses. Not a system designed simply to answer product questions and deflect complaints.</p>
-          <p>A Relationship Agent. One that listens, truly listens. That reasons and responds with the patience, nuance, and intuition of your best relationship manager. That understands where each client is emotionally and financially. That knows when to push gently forward and when to simply be present.</p>          <p>In industries like telecom, banking, aviation, and premium professional services, a single converted client is not a one-time revenue moment, it is a lifetime of engagement, repeat purchases, referrals, and compounding loyalty. The Relationship Engine was built for exactly this reality.</p>        </div>
-      </div>
-      <div data-reveal data-delay="2">
-        <div class="card" style="padding:3rem;">
-          <div style="margin-bottom:2rem; text-align:center;">
-            <div style="font-family:var(--ff-head); font-size:5rem; color:var(--clr-accent); line-height:1; opacity:0.2; margin-bottom:-1rem;">"</div>
-            <p style="font-size:1.05rem; color:var(--clr-white); font-style:italic; line-height:1.7; position:relative; z-index:1;">By the end, you'll realize: this isn't AI that talks about your business. This is AI that thinks like a human, acts with strategy, and nurtures relationships with precision.</p>
-          </div>
-          <div style="text-align:center;">
-            <a href="#demo" class="btn btn-primary">
-              Talk to the Agent
-              <span class="btn-icon">→</span>
-            </a>
-          </div>
+          <p>Trust doesn't come from marketing. It comes from: Consistency. Familiarity. Being remembered. Being understood.</p>
+          <p>The Relationship Engine earns the position where the sale naturally happens. It removes the friction that delays decisions. And it does this at scale.</p>
         </div>
       </div>
     </div>
+    
+    <div class="action-grid">
+      <div class="action-item" data-reveal data-delay="1">
+        <div style="font-size: 2rem;">💬</div>
+        <h4>It keeps the conversation going</h4>
+        <p>It checks in without being annoying. It maintains a light, human touch that keeps your brand top-of-mind.</p>
+      </div>
+      <div class="action-item" data-reveal data-delay="2">
+        <div style="font-size: 2rem;">🧠</div>
+        <h4>It remembers what matters</h4>
+        <p>When a client mentions a goal, a plan, or a date that matters, the engine acknowledges it later. This tells them: "They actually pay attention."</p>
+      </div>
+      <div class="action-item" data-reveal data-delay="3">
+        <div style="font-size: 2rem;">⏳</div>
+        <h4>It follows up without pressure</h4>
+        <p>It understands the "Middle Space." It exists beyond the transaction, building trust long before the sale is requested.</p>
+      </div>
+      <div class="action-item" data-reveal data-delay="4">
+        <div style="font-size: 2rem;">🚀</div>
+        <h4>It operates at scale</h4>
+        <p>Not for ten clients. But for hundreds—even thousands. Every conversation continuing. Every relationship growing.</p>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- ══ HOW IT WORKS ══════════════════════════════════════════════ -->
-<section class="section" style="background: var(--clr-bg2);">
+<!-- ══ CHAPTER 4: THE EXPERIENCE ══════════════════════════════ -->
+<section class="narrative-section" style="background: var(--clr-bg1);">
   <div class="container">
     <div class="section-header center" data-reveal>
-      <span class="badge">How It Works</span>
-      <h2>Lead Generation and Nurturing, Done Right</h2>
-      <div class="divider"></div>
-      <p>Your campaigns bring in leads. But then what? Most of them vanish. Most conversations die. The Relationship Engine doesn't just capture leads, it nurtures them into conviction.</p>    </div>
-    <div class="grid-3" style="margin-top:3rem">
-      <div class="process-step" data-reveal data-delay="1">
-        <div class="step-num">01</div>
-        <div>
-          <h4>It Listens and Understands</h4>
-          <p>The agent understands where each client is, financially, emotionally, and psychologically, and responds accordingly.</p>        </div>
-      </div>
-      <div class="process-step" data-reveal data-delay="2">
-        <div class="step-num">02</div>
-        <div>
-          <h4>It Guides Without Pressure</h4>
-          <p>Through subtle, human conversations, the agent builds trust over time and guides leads toward your business naturally.</p>
-        </div>
-      </div>
-      <div class="process-step" data-reveal data-delay="3">
-        <div class="step-num">03</div>
-        <div>
-          <h4>It Converts at the Right Moment</h4>
-          <p>No forcing. No spamming. The agent recognises readiness signals and converts when the moment is genuinely right.</p>
-        </div>
-      </div>
+      <span class="badge">The Experience</span>
+      <h2>Experience the Engine</h2>
+      <p style="max-width: 700px; margin: 0 auto;">Talk to the Relationship Agent. This isn't a chatbot. This is a system that understands timing, trust, and the 67% and can help you build your business the right way.</p>
     </div>
-  </div>
-</section>
 
-<!-- ══ HUMANISM AT THE CORE ═══════════════════════════════════════ -->
-<section class="section">
-  <div class="container">
-    <div class="section-header center" data-reveal>
-      <span class="badge">The Difference</span>
-      <h2>Humanism at the Core. Not Scripts.</h2>
-      <div class="divider"></div>
-      <p>This isn't AI with scripted playbooks. This is AI that thinks, reasons, and reacts like a human — because it was built on a profound understanding of how trust actually works.</p>
-    </div>
-    <div class="grid-4" style="margin-top:3rem">
-      <div class="card" data-reveal data-delay="1">
-        <div class="card-icon">👂</div>
-        <h4>It Listens, Not Just Hears</h4>
-        <p>The agent responds to what is said and what is meant, reading tone, timing, and intention in every conversation.</p>      </div>
-      <div class="card" data-reveal data-delay="2">
-        <div class="card-icon">🧬</div>
-        <h4>It Remembers and Builds Context</h4>
-        <p>Every interaction deepens its understanding of the client. It knows your customers better than any CRM could.</p>
-      </div>
-      <div class="card" data-reveal data-delay="3">
-        <div class="card-icon">💬</div>
-        <h4>Real Conversations, Not Exchanges</h4>
-        <p>Every interaction leaves the client feeling seen, heard, and valued. That feeling is called trust, and trust converts.</p>      </div>
-      <div class="card" data-reveal data-delay="4">
-        <div class="card-icon">📊</div>
-        <h4>It Mines Insights Naturally</h4>
-        <p>Product ideas, service improvements, unmet needs — all gathered intuitively through natural conversation, without surveys.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ TRANSFORMATION ════════════════════════════════════════════ -->
-<section class="section" style="background: var(--clr-bg2);">
-  <div class="container">
-    <div class="section-header center" data-reveal>
-      <span class="badge">The Transformation</span>
-      <h2>Picture Your Business Six Months From Now</h2>
-      <div class="divider"></div>
-    </div>
-    <div style="max-width:860px; margin:3rem auto 0" data-reveal>
-      <div class="prose">
-        <p>Leads no longer vanish. They arrive, engage, and convert naturally. The Relationship Engine has been quietly nurturing each one, learning their rhythms, meeting their questions, being present when your human team could not be. The pipeline has depth now, not just width.</p>        <p>Clients feel valued and understood. They trust your brand because someone, your Relationship Agent, has nurtured that trust every step of the way. They come to renewals not as a chore but as an obvious continuation. They tell others about you without being asked, because they feel something most brands never make their customers feel: genuinely important.</p>        <p>Marketing campaigns can now focus on strategy and creativity, while the Relationship Engine handles the complex human connections at scale. Your business stops chasing sales. Sales come naturally. Your company thrives because relationships, not content, drive growth.</p>      </div>
-    </div>
-    <div class="grid-3" style="margin-top:3rem">
-      <div class="card" data-reveal data-delay="1">
-        <div class="card-icon">✅</div>
-        <h4>Pipeline Has Depth</h4>
-        <p>Steady, growing flow of engaged, ready-to-buy clients who have been nurtured over time.</p>
-      </div>
-      <div class="card" data-reveal data-delay="2">
-        <div class="card-icon">❤️</div>
-        <h4>Clients Feel Invested In</h4>
-        <p>When clients feel genuinely understood, churn drops dramatically and referrals multiply.</p>
-      </div>
-      <div class="card" data-reveal data-delay="3">
-        <div class="card-icon">🚀</div>
-        <h4>Your Team Does More</h4>
-        <p>Human talent freed from repetitive relationship tasks can focus on high-value strategic work.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══ DEMO CTA ════════════════════════════════════════════════════ -->
-<section class="section" id="demo">
-  <div class="container">
-    <div class="chat-demo-container" data-reveal>
+    <div class="chat-demo-container" id="demo" data-reveal>
       <div class="chat-header">
-        <div class="agent-info">
-          <div class="agent-avatar">AI</div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <div class="agent-avatar">R</div>
           <div>
             <div class="agent-name">Relationship Agent</div>
-            <div class="agent-status">Online • Thinking about you</div>
+            <div class="agent-status">Online • Nurturing Trust</div>
           </div>
         </div>
-        <div class="demo-badge">Live Demo</div>
+        <div style="font-size: 0.7rem; color: var(--clr-accent); border: 1px solid var(--clr-accent); padding: 0.2rem 0.6rem; border-radius: 4px;">LIVE DEMO</div>
       </div>
-      
-      <div class="chat-messages" id="chatMessages">
-        <!-- AI Brain takes over greeting live -->
-      </div>
-
+      <div class="chat-messages" id="chatMessages"></div>
       <div class="chat-input-area">
-        <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off">
-        <button id="sendBtn" class="btn btn-primary" style="padding: 0.8rem 1.5rem;">
-          Send
-          <span class="btn-icon">↑</span>
-        </button>
+        <input type="text" id="chatInput" placeholder="Ask about the 67%..." autocomplete="off">
+        <button id="sendBtn" class="btn btn-primary" style="padding: 0.8rem 1.5rem;">Send</button>
       </div>
-
-      <div class="chat-footer">
-        <p>This agent is powered by Marketing with Kimani's Relationship AI, trained on human trust, not marketing scripts.</p>      </div>
+      <div style="padding: 1rem; background: var(--clr-bg2); text-align: center; border-top: 1px solid var(--clr-border);">
+        <p style="font-size: 0.75rem; color: var(--clr-muted); margin: 0;">Powered by Marketing with Kimani • Relationship-Led Acquisition</p>
+      </div>
     </div>
   </div>
 </section>
 
-<style>
-/* Chat Demo Styles */
-.chat-demo-container {
-  max-width: 800px;
-  margin: 0 auto;
-  background: var(--clr-bg2);
-  border: 1px solid var(--clr-border);
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  height: 600px;
-}
+<!-- ══ THE ACQUISITION SYSTEM ══════════════════════════════════ -->
+<section class="section" id="interest-form" style="background: var(--clr-bg3);">
+  <div class="container">
+    <div class="grid-2">
+      <div data-reveal>
+        <span class="badge">Deploy</span>
+        <h2>Integrate the Engine Into Your Business</h2>
+        <div class="divider"></div>
+        <div class="prose">
+          <p>Don't let your 67% disappear in silence. The Relationship Engine is an asset that grows in value as it builds your market's trust at scale.</p>
+          <p>Leave your details below. We'll show you how the engine fits into your current client acquisition process and how it can start bridging the gap for your business.</p>
+        </div>
+      </div>
+      <div data-reveal data-delay="2">
+        <form id="interestForm" class="card" style="padding: 2.5rem; background: var(--clr-bg2);">
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display:block; font-size:0.75rem; color:var(--clr-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em;">Full Name</label>
+            <input type="text" id="intName" name="name" required style="width:100%; padding:0.8rem 1.2rem; background:var(--clr-bg3); border:1px solid var(--clr-border); color:white; border-radius:12px; outline:none; font-family:var(--ff-body);">
+          </div>
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display:block; font-size:0.75rem; color:var(--clr-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em;">Business Email</label>
+            <input type="email" id="intEmail" name="email" required style="width:100%; padding:0.8rem 1.2rem; background:var(--clr-bg3); border:1px solid var(--clr-border); color:white; border-radius:12px; outline:none; font-family:var(--ff-body);">
+          </div>
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display:block; font-size:0.75rem; color:var(--clr-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em;">Business Name</label>
+            <input type="text" id="intBusiness" name="business" required style="width:100%; padding:0.8rem 1.2rem; background:var(--clr-bg3); border:1px solid var(--clr-border); color:white; border-radius:12px; outline:none; font-family:var(--ff-body);">
+          </div>
+          <div style="margin-bottom: 1.2rem;">
+            <label style="display:block; font-size:0.75rem; color:var(--clr-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em;">Phone Number</label>
+            <input type="tel" id="intPhone" name="phone" required style="width:100%; padding:0.8rem 1.2rem; background:var(--clr-bg3); border:1px solid var(--clr-border); color:white; border-radius:12px; outline:none; font-family:var(--ff-body);">
+          </div>
+          <div style="margin-bottom: 1.8rem;">
+            <label style="display:block; font-size:0.75rem; color:var(--clr-muted); margin-bottom:0.4rem; text-transform:uppercase; letter-spacing:0.05em;">Country</label>
+            <input type="text" id="intCountry" name="country" required style="width:100%; padding:0.8rem 1.2rem; background:var(--clr-bg3); border:1px solid var(--clr-border); color:white; border-radius:12px; outline:none; font-family:var(--ff-body);">
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">Send My Interest →</button>
+          <p id="intSuccess" style="display:none; color:var(--clr-accent); text-align:center; margin-top:1rem; font-weight:600;">Thank you. We'll be in touch!</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
 
-.chat-header {
-  padding: 1.5rem 2rem;
-  background: var(--clr-bg3);
-  border-bottom: 1px solid var(--clr-border);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+<!-- ══ FINAL IMPACT ═══════════════════════════════════════════ -->
+<section class="section" style="background: var(--clr-accent); color: #0b0b0b; text-align: center;">
+  <div class="container">
+    <div style="max-width: 900px; margin: 0 auto;" data-reveal>
+      <h2 style="color: #0b0b0b; font-size: 4rem; font-weight: 900;">Trust is what people actually buy.</h2>
+      <p style="font-size: 1.4rem; margin-top: 2rem; color: #0b0b0b; font-weight: 500;">The businesses that win won't be the ones with the best ads. They'll be the ones who stayed in people's lives long enough to be trusted.</p>
+      <div style="margin-top: 4rem;">
+         <a href="#interest-form" class="btn" style="background: #0b0b0b; color: #fff; font-size: 1.2rem; padding: 1.2rem 3rem;">Inquire About the Engine</a>
+      </div>
+    </div>
+  </div>
+</section>
 
-.agent-info {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.agent-avatar {
-  width: 44px;
-  height: 44px;
-  background: var(--clr-accent);
-  color: var(--clr-bg1);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-family: var(--ff-head);
-}
-
-.agent-name {
-  font-weight: 700;
-  color: var(--clr-white);
-  font-size: 1.1rem;
-}
-
-.agent-status {
-  font-size: 0.8rem;
-  color: var(--clr-accent);
-  opacity: 0.8;
-}
-
-.demo-badge {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--clr-accent);
-  color: var(--clr-accent);
-  border-radius: 4px;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 2rem;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.message {
-  max-width: 80%;
-  padding: 1rem 1.5rem;
-  border-radius: 18px;
-  line-height: 1.6;
-  font-size: 0.95rem;
-  position: relative;
-  animation: fadeInUp 0.4s ease forwards;
-}
-
-.message.assistant {
-  align-self: flex-start;
-  background: var(--clr-bg3);
-  color: var(--clr-white);
-  border-bottom-left-radius: 4px;
-  border: 1px solid var(--clr-border);
-}
-
-.message.user {
-  align-self: flex-end;
-  background: var(--clr-accent);
-  color: var(--clr-bg1);
-  border-bottom-right-radius: 4px;
-}
-
-.chat-input-area {
-  padding: 1.5rem 2rem;
-  background: var(--clr-bg3);
-  border-top: 1px solid var(--clr-border);
-  display: flex;
-  gap: 1rem;
-}
-
-#chatInput {
-  flex: 1;
-  background: var(--clr-bg2);
-  border: 1px solid var(--clr-border);
-  padding: 0.85rem 1.2rem;
-  border-radius: 12px;
-  color: var(--clr-white);
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-#chatInput:focus {
-  border-color: var(--clr-accent);
-}
-
-.chat-footer {
-  padding: 1rem 2rem;
-  background: var(--clr-bg2);
-  border-top: 1px solid var(--clr-border);
-  text-align: center;
-}
-
-.chat-footer p {
-  font-size: 0.75rem;
-  color: var(--clr-muted);
-  margin: 0;
-}
-
-.typing-indicator {
-  display: flex;
-  gap: 4px;
-  padding: 4px 0;
-}
-
-.typing-indicator span {
-  width: 6px;
-  height: 6px;
-  background: var(--clr-accent);
-  border-radius: 50%;
-  animation: bounce 1.4s infinite ease-in-out both;
-}
-
-.typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-.typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-  0%, 80%, 100% { transform: scale(0); }
-  40% { transform: scale(1.0); }
-}
-</style>
-
+<!-- ── SCRIPTS ── -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const chatMessages = document.getElementById('chatMessages');
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
   
-  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3010'
-    : '';
+  const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:3010' : '';
+  let sessionId = localStorage.getItem('kimani_session_id') || 'session-' + Math.random().toString(36).substr(2, 9);
+  localStorage.setItem('kimani_session_id', sessionId);
   
-  // ─── SESSION PERSISTENCE ───
-  // Use existing ID from localStorage or create a new one
-  let sessionId = localStorage.getItem('kimani_session_id');
-  if (!sessionId) {
-    sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('kimani_session_id', sessionId);
-  }
-  
-  // ─── UTILS ───
   function addMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role}`;
@@ -494,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typing) typing.remove();
   }
 
-  // ─── API CALL WITH RETRY ───
   async function callBrain(message, retries = 2) {
     try {
       const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
@@ -502,136 +417,83 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId, message })
       });
-
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error('Network error');
       return await response.json();
-    } catch (error) {
-      if (retries > 0) {
-        console.log(`Retrying... attempts left: ${retries}`);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        return callBrain(message, retries - 1);
-      }
-      throw error;
+    } catch (e) {
+      if (retries > 0) return callBrain(message, retries - 1);
+      throw e;
     }
   }
 
-  // ─── INITIALIZE AI BRAIN GREETING ───
   async function initChat() {
     showTyping();
     try {
       const data = await callBrain("[CLIENT_LANDED_ON_PAGE]");
       removeTyping();
-
-      if (data.response) {
-        // Only greeting if chat is empty
-        if (chatMessages.children.length <= 0) {
-          addMessage('assistant', data.response);
+      if (data.bursts) {
+        for (const b of data.bursts) {
+          addMessage('assistant', b);
+          await new Promise(r => setTimeout(r, 800));
         }
-      }
-    } catch (error) {
+      } else if (data.response) addMessage('assistant', data.response);
+    } catch (e) {
       removeTyping();
-      addMessage('assistant', "hey... just getting my thoughts together. 👋🏾 [BURST] what are you working on in your business right now?");
-      console.error('Initial chat error:', error);
+      addMessage('assistant', "I'm thinking... give me a second. 👋🏾 what can I help you build today?");
     }
   }
 
-  // Trigger AI Greeting
   initChat();
 
   async function handleSend() {
     const text = chatInput.value.trim();
     if (!text) return;
-
     chatInput.value = '';
     addMessage('user', text);
-
     showTyping();
-
     try {
       const data = await callBrain(text);
       removeTyping();
-
-      if (data.bursts && Array.isArray(data.bursts)) {
-        for (let i = 0; i < data.bursts.length; i++) {
-          addMessage('assistant', data.bursts[i]);
-          if (i < data.bursts.length - 1) {
-            showTyping();
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            removeTyping();
-          }
+      if (data.bursts) {
+        for (const b of data.bursts) {
+          addMessage('assistant', b);
+          await new Promise(r => setTimeout(r, 1000));
         }
-      } else if (data.response) {
-        addMessage('assistant', data.response);
-      } else {
-        addMessage('assistant', "I'm processing that... give me one more moment.");
-      }
-    } catch (error) {
+      } else if (data.response) addMessage('assistant', data.response);
+    } catch (e) {
       removeTyping();
-      addMessage('assistant', "I'm having a bit of trouble connecting to my brain right now. But I'm still listening. Mind trying that again?");
-      console.error('Chat error:', error);
+      addMessage('assistant', "Connecting my thoughts... mind trying that again?");
     }
   }
 
   sendBtn.addEventListener('click', handleSend);
-  chatInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleSend();
-  });
+  chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+
+  // Interest Form Logic
+  const interestForm = document.getElementById('interestForm');
+  const intSuccess = document.getElementById('intSuccess');
+  if (interestForm) {
+    interestForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('intName').value;
+      const email = document.getElementById('intEmail').value;
+      const business = document.getElementById('intBusiness').value;
+      const phone = document.getElementById('intPhone').value;
+      const country = document.getElementById('intCountry').value;
+      
+      interestForm.style.opacity = '0.5';
+      interestForm.style.pointerEvents = 'none';
+      
+      // Store in session for discovery page
+      const userData = { name, email, business, phone, country };
+      sessionStorage.setItem('onboarding_user', JSON.stringify(userData));
+      
+      setTimeout(() => {
+        window.location.href = `discovery.html?name=${encodeURIComponent(name)}`;
+      }, 800);
+    });
+  }
 });
 </script>
-
-<!-- ══ FOOTER ═════════════════════════════════════════════════════ -->
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a href="index.html" class="nav-logo">
-          <img src="assets/Logo Kimani.png" alt="Kimani Logo">
-          <span class="logo-text">Marketing with Kimani</span>
-        </a>
-        <p>African Marketing Authority. Building trust-driven strategies for brands that want to lead their markets, not just compete in them.</p>
-        <div class="footer-socials">
-          <a href="#" aria-label="LinkedIn">in</a>
-          <a href="#" aria-label="Twitter">𝕏</a>
-          <a href="#" aria-label="Instagram">📷</a>
-          <a href="#" aria-label="YouTube">▶</a>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h5>Pages</h5>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="67percent.html">The 67%</a></li>
-          <li><a href="relationship-engine.html">Relationship Engine</a></li>
-          <li><a href="strategy.html">Strategy</a></li>
-          <li><a href="work-with-me.html">Work With Me</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Services</h5>
-        <ul>
-          <li><a href="strategy.html">Corporate Strategy</a></li>
-          <li><a href="work-with-me.html">1 on 1 Coaching</a></li>
-          <li><a href="relationship-engine.html">Relationship Engine</a></li>
-          <li><a href="work-with-me.html">Brand Positioning</a></li>
-          <li><a href="work-with-me.html">Market Intelligence</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Contact</h5>
-        <ul>
-          <li><a href="mailto:enquiries@marketingwithkimani.co.ke">enquiries@marketingwithkimani.co.ke</a></li>
-          <li><a href="mailto:automations@marketingwithkimani.co.ke">automations@marketingwithkimani.co.ke</a></li>
-          <li><a href="tel:+254727856464">0727 85 64 64</a></li>
-          <li><a href="#">Nairobi, Kenya</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2025 Marketing with Kimani. All rights reserved.</p>
-      <p>Designed with <span style="color:var(--clr-accent)">●</span> for African excellence.</p>
-    </div>
-  </div>
-</footer>
 
 <script src="js/main.js"></script>
 </body>
