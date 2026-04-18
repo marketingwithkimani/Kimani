@@ -825,54 +825,61 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  // ─── SUPABASE CONFIG ───────────────────────────────────────────
-  // TODO: replace these with your real Supabase project URL and anon key
-  const SUPABASE_URL  = 'YOUR_SUPABASE_PROJECT_URL';  // e.g. https://xyzcompany.supabase.co
-  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-  // ──────────────────────────────────────────────────────────────
-
-  // Reveal on scroll
-  const observer = new IntersectionObserver((entries) => {
+  // ─── ALWAYS RUNS FIRST: reveal observers ─────────────────────────
+  const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
   }, { threshold: 0.12 });
-  document.querySelectorAll('[data-r]').forEach(el => observer.observe(el));
+  document.querySelectorAll('[data-r]').forEach(el => revealObserver.observe(el));
 
-  // Animate bars on scroll
+  // Animate market bars on scroll
   const barObserver = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
         e.target.querySelectorAll('.market-bar').forEach((b, i) => {
-          setTimeout(() => b.classList.add('animated'), i * 200);
+          setTimeout(() => b.classList.add('animated'), i * 180);
         });
       }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.25 });
   document.querySelectorAll('.market-chart').forEach(el => barObserver.observe(el));
 
-  // ─── LEAD MODAL ────────────────────────────────────────────────
+  // Safety net: if nothing has revealed after 600ms, force-reveal everything
+  setTimeout(() => {
+    document.querySelectorAll('[data-r]:not(.on)').forEach(el => el.classList.add('on'));
+    document.querySelectorAll('.market-bar:not(.animated)').forEach(b => b.classList.add('animated'));
+  }, 600);
+
+  // ─── LEAD MODAL ─────────────────────────────────────────────────
   function openLeadModal() {
     document.getElementById('leadModal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
-
   function closeLeadModal() {
     document.getElementById('leadModal').classList.remove('open');
     document.body.style.overflow = '';
   }
-
-  // Close on backdrop click
   document.getElementById('leadModal').addEventListener('click', function(e) {
     if (e.target === this) closeLeadModal();
   });
-
-  // Close on Escape key
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLeadModal(); });
 
-  // ─── FORM SUBMISSION → SUPABASE ────────────────────────────────
+  // ─── SUPABASE (safe init — page works even without credentials) ──
+  // Replace these two values with your Supabase project URL and anon key
+  const SUPABASE_URL  = 'YOUR_SUPABASE_PROJECT_URL';
+  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+
+  let sbClient = null;
+  try {
+    if (SUPABASE_URL !== 'YOUR_SUPABASE_PROJECT_URL' && window.supabase) {
+      sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    }
+  } catch(e) {
+    console.warn('Supabase not configured yet:', e.message);
+  }
+
+  // ─── FORM SUBMISSION ─────────────────────────────────────────────
   document.getElementById('leadCaptureForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
     const name    = document.getElementById('lf-name').value.trim();
     const email   = document.getElementById('lf-email').value.trim();
     const phone   = document.getElementById('lf-phone').value.trim();
@@ -887,26 +894,28 @@
     btn.disabled = true;
     btn.textContent = 'Submitting...';
 
+    const leadData = { name, email, phone, country, source: 'The 67% Page', created_at: new Date().toISOString() };
+
     try {
-      const { error } = await supabase
-        .from('leads_67')          // Table name in your Supabase project
-        .insert([{ name, email, phone, country, source: 'The 67% Page', created_at: new Date().toISOString() }]);
-
-      if (error) throw error;
-
-      // Show success
-      document.getElementById('modalForm').style.display = 'none';
-      document.getElementById('modalSuccess').style.display = 'block';
-
-    } catch (err) {
+      if (sbClient) {
+        const { error } = await sbClient.from('leads_67').insert([leadData]);
+        if (error) console.error('Supabase insert error:', error);
+      } else {
+        // Fallback: save lead locally until Supabase is configured
+        const saved = JSON.parse(localStorage.getItem('kimani_67_leads') || '[]');
+        saved.push(leadData);
+        localStorage.setItem('kimani_67_leads', JSON.stringify(saved));
+        console.log('Lead saved locally (Supabase not yet configured):', leadData);
+      }
+    } catch(err) {
       console.error('Lead capture error:', err);
-      // Fallback: still show success visually and log locally
-      document.getElementById('modalForm').style.display = 'none';
-      document.getElementById('modalSuccess').style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      btn.textContent = 'Show Me the 67% Strategy →';
     }
+
+    // Always show success to the user
+    document.getElementById('modalForm').style.display = 'none';
+    document.getElementById('modalSuccess').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Show Me the 67% Strategy →';
   });
 </script>
 
