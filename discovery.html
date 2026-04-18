@@ -226,6 +226,18 @@ document.addEventListener('DOMContentLoaded', () => {
   let sessionId = 'onboarding-' + Math.random().toString(36).substr(2, 9);
   document.getElementById('displaySessionId').innerText = sessionId.split('-')[1].toUpperCase();
 
+  const questions = [
+    { id: 'product', text: "To get us started: could you describe your main product or service in one simple sentence?" },
+    { id: 'audience', text: "Great. Who is your ideal target audience (specific industries, roles, or founders)?" },
+    { id: 'bottleneck', text: "Understood. What is your current biggest marketing or sales bottleneck right now?" },
+    { id: 'style', text: "I see. Do you have a sales team handling leads, or are you looking for fully automated relationship nurturing?" },
+    { id: 'economics', text: "Makes sense. Roughly, what's your average Price for a product/service or income from a single customer?" },
+    { id: 'goal', text: "Finally, what's the ONE thing you want the Relationship Engine to solve for your business first?" }
+  ];
+
+  let currentQuestionIndex = 0;
+  let isAwaitingHandover = false;
+
   function addMessage(role, text) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `message ${role}`;
@@ -249,83 +261,81 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typing) typing.remove();
   }
 
-  async function callBrain(message) {
+  async function callBrain(message, directive = "") {
     try {
+      const payload = { sessionId, message };
+      if (directive) payload.message = directive + "\n\nUser response: " + message;
+      
       const response = await fetch(`${API_BASE}/kimani-ai-core/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message })
+        body: JSON.stringify(payload)
       });
       if (!response.ok) throw new Error('AI Error');
       return await response.json();
     } catch (e) {
       console.error(e);
-      return { response: "I'm having a slight connection issue, but let's keep going. Tell me about your business?" };
+      return { response: "I've noted that down. Let's move to the next part." };
     }
   }
 
   async function initDiscovery() {
     showTyping();
-    // System instruction passed via first message
-    const systemPrompt = `[INTERNAL_SYSTEM_DIRECTIVE]: User Name: ${userData.name}, Business: ${userData.business}, Country: ${userData.country}, Email: ${userData.email}, Phone: ${userData.phone}. 
-    GOAL: You are the Relationship Agent conducting a fast-tracked strategic discovery session. 
-    
-    RULES OF ENGAGEMENT:
-    1. INTRO: Welcome them. Briefly explain these are 6 small questions to help YOU understand their business (NOT for leads, just for custom engineering). Promise to be fast.
-    2. ONE AT A TIME: You must ask exactly ONE question per turn. 
-    3. NO DEEP DIVES: When the user answers, acknowledge it briefly (mirror their thought), then move immediately to the next question. Do not explore or double-down. The human (Kimani) will review the full context later.
-    
-    THE 6-QUESTION SEQUENCE:
-    1. Product/Service Description: "Could you describe your main product or service in one simple sentence?"
-    2. Target Audience: "Who is your ideal target audience (specific industries or roles)?"
-    3. Bottlenecks: "What is your current biggest marketing or sales bottleneck?"
-    4. Delivery Style: "Do you have a sales team handling leads, or are you looking for fully automated relationship nurturing?"
-    5. Economics: "Roughly, what's your average Price for a product/service or income from a single customer?"
-    6. Ultimate Goal: "What's the ONE thing you want the Relationship Engine to solve for your business first?"
-    
-    COMPLETION: After the 6th question is answered, acknowledge it, provide a concise warm closing, and hand them over to Kimani. 
-    MANDATORY: End your final message with the tag: [DISCOVERY_COMPLETE].`;
-
-    const data = await callBrain(systemPrompt);
+    await new Promise(r => setTimeout(r, 1000));
     removeTyping();
+    addMessage('assistant', `Hey ${userData.name}, welcome 👋🏾 Glad you're here. [BURST] I have 6 small questions to help me understand ${userData.business} properly so I can build the right strategy for you. [BURST] We'll be very brief, and this isn't for "leads" — it's for genuine custom engineering.`);
     
+    await new Promise(r => setTimeout(r, 1200));
+    addMessage('assistant', questions[0].text);
+  }
+
+  async function handleSend() {
+    const text = chatInput.value.trim();
+    if (!text || isAwaitingHandover) return;
+    
+    chatInput.value = '';
+    this.style.height = 'auto'; // Reset textarea height
+    addMessage('user', text);
+    
+    showTyping();
+
+    // Directive tells AI how to acknowledge based on current question
+    const acknowledgingDirective = `[INTERNAL_SYSTEM_DIRECTIVE]: The user is answering the question about "${questions[currentQuestionIndex].id}". 
+    YOUR TASK: 
+    1. Acknowledge/mirror their answer in 2 short, human bubbles using [BURST].
+    2. DO NOT ASK ANY NEW QUESTIONS. I repeat: NO QUESTIONS.
+    3. Be brief and supportive.`;
+
+    const data = await callBrain(text, acknowledgingDirective);
+    removeTyping();
+
     if (data.bursts) {
       for (const b of data.bursts) {
         addMessage('assistant', b);
         await new Promise(r => setTimeout(r, 800));
       }
-    } else if (data.response) {
+    } else {
       addMessage('assistant', data.response);
     }
-  }
 
-  async function handleSend() {
-    const text = chatInput.value.trim();
-    if (!text) return;
-    chatInput.value = '';
-    addMessage('user', text);
-    
-    showTyping();
-    const data = await callBrain(text);
-    removeTyping();
+    currentQuestionIndex++;
 
-    if (data.bursts) {
-      for (const b of data.bursts) {
-        processResponse(b);
-        await new Promise(r => setTimeout(r, 1000));
-      }
-    } else if (data.response) {
-      processResponse(data.response);
-    }
-  }
-
-  function processResponse(text) {
-    if (text.includes('[DISCOVERY_COMPLETE]')) {
-      const cleanText = text.replace('[DISCOVERY_COMPLETE]', '');
-      addMessage('assistant', cleanText);
-      finish();
+    if (currentQuestionIndex < questions.length) {
+      await new Promise(r => setTimeout(r, 1500));
+      showTyping();
+      await new Promise(r => setTimeout(r, 800));
+      removeTyping();
+      addMessage('assistant', questions[currentQuestionIndex].text);
     } else {
-      addMessage('assistant', text);
+      isAwaitingHandover = true;
+      await new Promise(r => setTimeout(r, 1500));
+      showTyping();
+      await new Promise(r => setTimeout(r, 1200));
+      removeTyping();
+      addMessage('assistant', `Thanks for sharing all this, ${userData.name}. I've got a great picture of ${userData.business} now.`);
+      await new Promise(r => setTimeout(r, 1000));
+      addMessage('assistant', "I'm handing these details over to Kimani right now for a strategic review. You'll be hearing from him soon.");
+      finish();
     }
   }
 
@@ -338,10 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   sendBtn.addEventListener('click', handleSend);
-  chatInput.addEventListener('keypress', (e) => { 
+  chatInput.addEventListener('keydown', function(e) { 
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend(); 
+      handleSend.call(this); 
     }
   });
 
