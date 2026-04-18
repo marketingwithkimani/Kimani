@@ -249,10 +249,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // System instruction passed via first message
     const systemPrompt = `[INTERNAL_SYSTEM_DIRECTIVE]: User Name: ${userData.name}, Business: ${userData.business}, Country: ${userData.country}, Email: ${userData.email}, Phone: ${userData.phone}. 
     GOAL: You are the Relationship Agent conducting a discovery session. 
-    1. EXPLAIN carefully that these are brief questions to help you understand them better, NOT for lead generation. Tell them this so they feel comfortable opening up. Promise to be brief.
-    2. Ask about their main product, audience, bottlenecks, team, ticket size, and one thing the Engine should solve. 
-    3. Be adaptable. If they ask a question, answer it and pivot back. 
-    4. When finished (after ~6 questions), finish your message with the exact tag: [DISCOVERY_COMPLETE].`;
+    1. IN THE INTRO: Welcome them warmly. Explicitly explain that these are just a few small questions to help you (the agent) understand them better. Emphasize that this is NOT for lead generation baiting, but for genuine understanding so the client feels comfortable opening up. Promise to be very brief.
+    2. CONDUCT DISCOVERY: Adaptably ask about their main product, target audience, marketing bottlenecks, sales team vs automation, pricing/income per customer, and their #1 goal for the Engine. 
+    3. BE ADAPTABLE: If they ask questions or make comments, respond naturally then pivot back to the discovery.
+    4. ON COMPLETION: After ~6 questions or once you have a good picture, provide a warm closing. Finish your message with the exact tag: [DISCOVERY_COMPLETE].`;
 
     const data = await callBrain(systemPrompt);
     removeTyping();
