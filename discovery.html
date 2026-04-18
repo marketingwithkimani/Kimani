@@ -14,10 +14,10 @@
     }
     body { 
       background-color: var(--clr-bg-deep); 
-      height: 100vh;
-      overflow: hidden;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
     
     .discovery-container {
@@ -27,14 +27,15 @@
       max-width: 900px;
       margin: 0 auto;
       width: 100%;
-      padding: 1.5rem;
-      padding-top: 80px;
-      height: 100vh;
+      padding: 1rem;
+      padding-bottom: 2rem;
       box-sizing: border-box;
+      min-height: 600px; /* Ensure a decent size */
     }
 
     .chat-window {
       flex: 1;
+      min-height: 500px;
       background: var(--clr-bg2);
       border: 1px solid var(--clr-border);
       border-radius: 32px;
@@ -176,7 +177,7 @@
   </div>
 </div>
 
-<div class="discovery-container" style="padding-top: 40px;">
+<div class="discovery-container">
   <div class="chat-window">
     <div class="chat-header">
       <div class="header-info">
@@ -267,11 +268,27 @@ document.addEventListener('DOMContentLoaded', () => {
     showTyping();
     // System instruction passed via first message
     const systemPrompt = `[INTERNAL_SYSTEM_DIRECTIVE]: User Name: ${userData.name}, Business: ${userData.business}, Country: ${userData.country}, Email: ${userData.email}, Phone: ${userData.phone}. 
-    GOAL: You are the Relationship Agent conducting a discovery session. 
-    1. IN THE INTRO: Welcome them warmly. Explicitly explain that these are just a few small questions to help you (the agent) understand them better. Emphasize that this is NOT for lead generation baiting, but for genuine understanding so the client feels comfortable opening up. Promise to be very brief.
-    2. CONDUCT DISCOVERY: Adaptably ask about their main product, target audience, marketing bottlenecks, sales team vs automation, pricing/income per customer, and their #1 goal for the Engine. 
-    3. BE ADAPTABLE: If they ask questions or make comments, respond naturally then pivot back to the discovery.
-    4. ON COMPLETION: After ~6 questions or once you have a good picture, provide a warm closing. Finish your message with the exact tag: [DISCOVERY_COMPLETE].`;
+    GOAL: You are the Relationship Agent conducting a strategic discovery session. 
+    
+    1. INTRO: Start by welcoming them. Clearly explain that these are 6 small questions designed to help you understand their business better so you can provide real value. Explicitly state this is NOT for "lead generation" but for genuine strategic understanding, so they can feel comfortable opening up. Promise to be brief.
+    
+    2. THE QUESTIONS (Ask these one by one, adaptably):
+       - Q1: Describe your main product or service in a simple sentence.
+       - Q2: Who is your ideal target audience (founders, executives, specific industries)?
+       - Q3: What is your current biggest marketing or sales bottleneck?
+       - Q4: Do you have a sales team handling leads, or are you looking for fully automated relationship nurturing?
+       - Q5: Roughly, what is your average price for a product/service or income from a single customer?
+       - Q6: What is the ONE thing you want the Relationship Engine to solve for your business first?
+    
+    3. BEHAVIOR: 
+       - Be conversational and adaptable. 
+       - Acknowledge their answers before moving to the next question.
+       - If they ask something, answer briefly and pivot back to the flow.
+    
+    4. HANDOVER & COMPLETION: 
+       - After the 6th question is answered, provide a warm closing.
+       - Tell them you are handing the details to Kimani for review.
+       - IMPORTANT: End your final message with the exact tag: [DISCOVERY_COMPLETE].`;
 
     const data = await callBrain(systemPrompt);
     removeTyping();
