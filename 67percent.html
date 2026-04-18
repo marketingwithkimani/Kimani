@@ -10,6 +10,9 @@
   <link rel="canonical" href="https://marketingwithkimani.co.ke/67percent.html">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
+  
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     /* ── PAGE FOUNDATION ── */
@@ -304,113 +307,111 @@
     [data-r][data-d="3"] { transition-delay: 0.3s; }
     [data-r][data-d="4"] { transition-delay: 0.4s; }
 
-    /* ── LEAD MODAL ── */
+    /* ── LEAD MODAL (simple, reliable) ── */
     #leadModal {
-      display: none;
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      height: 100vh !important;
-      z-index: 99999 !important;
-      overflow-y: auto;
-      padding: 2rem;
-      background: rgba(0, 0, 0, 0.94);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      /* Hidden by default via visibility — no display swap needed */
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      /* Full-screen overlay */
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 99999;
+      /* NO backdrop-filter — causes GPU freeze on mobile */
+      background: rgba(0, 0, 0, 0.88);
+      /* Center the box */
+      display: flex;
       align-items: center;
       justify-content: center;
+      padding: 1.5rem;
+      box-sizing: border-box;
     }
-    #leadModal.open { display: flex; }
+    #leadModal.open {
+      visibility: visible;
+      opacity: 1;
+    }
     .lead-modal-box {
-      background: #0f0f0f;
-      border: 1px solid rgba(200,242,48,0.25);
-      border-radius: 28px;
-      max-width: 500px;
+      background: #111;
+      border: 1px solid rgba(200,242,48,0.3);
+      border-radius: 20px;
+      max-width: 480px;
       width: 100%;
-      padding: 3rem;
+      padding: 2.5rem;
       position: relative;
-      animation: modalPop 0.5s cubic-bezier(0.2,0,0,1);
-    }
-    @keyframes modalPop {
-      from { opacity:0; transform: scale(0.92) translateY(24px); }
-      to   { opacity:1; transform: scale(1) translateY(0); }
+      z-index: 100000;
+      color: #fff;
     }
     .modal-close {
       position: absolute;
-      top: 1.2rem; right: 1.4rem;
+      top: 1rem; right: 1.2rem;
       background: none; border: none;
-      color: #444; font-size: 1.6rem;
+      color: #666; font-size: 1.8rem;
       cursor: pointer; line-height: 1;
-      transition: color 0.2s;
     }
-    .modal-close:hover { color: var(--clr-accent); }
+    .modal-close:hover { color: #fff; }
     .lead-modal-box h3 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       color: #fff;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
     }
     .lead-modal-box .modal-sub {
-      color: #666;
+      color: #777;
       font-size: 0.95rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.8rem;
       line-height: 1.6;
     }
-    .lead-field { margin-bottom: 1.2rem; }
+    .lead-field { margin-bottom: 1.1rem; }
     .lead-field label {
       display: block;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: #555;
-      margin-bottom: 0.45rem;
+      color: #666;
+      margin-bottom: 0.4rem;
     }
     .lead-field input,
     .lead-field select {
       width: 100%;
-      padding: 0.85rem 1.2rem;
-      background: #181818;
+      padding: 0.8rem 1rem;
+      background: #1a1a1a;
       border: 1px solid #2a2a2a;
-      border-radius: 12px;
+      border-radius: 10px;
       color: #fff;
-      font-family: var(--ff-body);
       font-size: 1rem;
       outline: none;
-      transition: border-color 0.25s;
+      box-sizing: border-box;
     }
     .lead-field input:focus,
     .lead-field select:focus { border-color: var(--clr-accent); }
-    .lead-field select option { background: #181818; }
+    .lead-field select option { background: #1a1a1a; }
     .lead-submit {
       width: 100%;
-      padding: 1rem;
+      padding: 0.9rem;
       background: var(--clr-accent);
-      color: #0b0b0b;
+      color: #000;
       border: none;
       border-radius: 50px;
-      font-family: var(--ff-head);
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
       margin-top: 0.5rem;
-      transition: opacity 0.2s, transform 0.2s;
     }
-    .lead-submit:hover { opacity: 0.9; transform: translateY(-2px); }
-    .lead-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .lead-submit:disabled { opacity: 0.5; cursor: not-allowed; }
     .lead-success {
       display: none;
       text-align: center;
       padding: 2rem 0;
     }
-    .lead-success .hero-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-    .lead-success h4 { color: var(--clr-accent); font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .lead-success .hero-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .lead-success h4 { color: var(--clr-accent); font-size: 1.4rem; margin-bottom: 0.75rem; }
     .lead-success p { color: #777; line-height: 1.7; }
     .modal-privacy {
       text-align: center;
-      font-size: 0.75rem;
-      color: #333;
-      margin-top: 1.2rem;
+      font-size: 0.72rem;
+      color: #444;
+      margin-top: 1rem;
     }
 
     /* ── RESPONSIVE ── */
@@ -860,8 +861,6 @@
     const mSucc = document.getElementById('modalSuccess');
     if (modal) {
       modal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-      // Safety reset to ensure form shows
       if (mForm) mForm.style.display = 'block';
       if (mSucc) mSucc.style.display = 'none';
     }
@@ -869,10 +868,7 @@
 
   function closeLeadModal() {
     const modal = document.getElementById('leadModal');
-    if (modal) {
-      modal.classList.remove('open');
-      document.body.style.overflow = '';
-    }
+    if (modal) modal.classList.remove('open');
   }
 
   const modalEl = document.getElementById('leadModal');

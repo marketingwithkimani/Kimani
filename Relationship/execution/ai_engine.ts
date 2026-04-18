@@ -182,8 +182,11 @@ export async function generateResponse(
 }> {
   // HARD-PINNED GREETING: Ensure the first impression is flawless
   if (message === "[CLIENT_LANDED_ON_PAGE]") {
+    const responseText = "Hey, welcome 👋🏾 Glad you're here. [BURST] I have 6 small questions to help me understand - properly so I can build the right strategy for you. [BURST] We'll be very brief, and this isn't for \"leads\" — it's for giving your tailored solution. [BURST] To get us started: could you describe your main product or service in one simple sentence?";
+    const bursts = responseText.split("[BURST]").map(b => b.trim());
     return {
-      response: "hey, welcome 👋🏾 [BURST] glad you're here. I have 6 small questions to help me understand your business so I can build the right strategy [BURST] I'll be very brief. [BURST] To get us started: could you describe your main product or service in one simple sentence?",
+      response: responseText,
+      bursts: bursts, // CRITICAL: Added bursts array so UI doesn't see [BURST] tags
       intent: {
         intentScore: 30,
         stage: "curiosity",
