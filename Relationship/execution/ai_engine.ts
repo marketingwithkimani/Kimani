@@ -182,7 +182,7 @@ export async function generateResponse(
 }> {
   // HARD-PINNED GREETING: Ensure the first impression is flawless
   if (message === "[CLIENT_LANDED_ON_PAGE]") {
-    const responseText = "Hey, welcome 👋🏾 Glad you're here. [BURST] I have 6 small questions to help me understand - properly so I can build the right strategy for you. [BURST] We'll be very brief, and this isn't for \"leads\" — it's for giving your tailored solution. [BURST] To get us started: could you describe your main product or service in one simple sentence?";
+    const responseText = "Hey, welcome 👋🏾 Glad you're here. [BURST] I'm the Relationship Agent — the voice of the engine built by Marketing with Kimani. [BURST] I help businesses understand the 67% who observe slowly and buy through trust, not hype. [BURST] What kind of business are you running?";
     const bursts = responseText.split("[BURST]").map(b => b.trim());
     return {
       response: responseText,

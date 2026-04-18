@@ -24,20 +24,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── HAMBURGER MOBILE MENU ──────────────────────────────────
   const hamburger = document.getElementById('hamburger');
   const mobileNav = document.getElementById('mobileNav');
+  
   if (hamburger && mobileNav) {
-    hamburger.addEventListener('click', () => {
+    const toggleMenu = () => {
       const isOpen = hamburger.classList.toggle('open');
       mobileNav.classList.toggle('open', isOpen);
       document.body.style.overflow = isOpen ? 'hidden' : '';
+    };
+
+    hamburger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleMenu();
     });
 
-    // close on link click
+    // Close on link click
     mobileNav.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         hamburger.classList.remove('open');
         mobileNav.classList.remove('open');
         document.body.style.overflow = '';
       });
+    });
+
+    // Close on escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && mobileNav.classList.contains('open')) {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     });
   }
 
