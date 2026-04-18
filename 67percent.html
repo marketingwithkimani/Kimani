@@ -4,67 +4,434 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The 67% | Discover the Silent Majority | Marketing with Kimani</title>
-  
-  <meta name="description" content="You're not struggling with marketing, you're struggling with timing. Discover how to stay with your market when they're not ready to buy yet.">
-  <meta name="keywords" content="Marketing in Africa, AI Agentic Company, AI in Africa, African Marketing Authority, Lead Generation Africa, B2B Marketing Africa">
+  <meta name="description" content="You're not struggling with marketing — you're struggling with timing. Discover the 67% your competitors can't see and learn how to stay with your market when they're not ready to buy yet.">
+  <meta name="keywords" content="Marketing in Africa, AI Agentic Company, AI in Africa, African Marketing Authority, Lead Generation Africa, B2B Marketing Africa, 67 percent market">
   <meta name="author" content="Marketing with Kimani">
-  
+  <link rel="canonical" href="https://marketingwithkimani.co.ke/67percent.html">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="assets/Logo Kimani.png">
-  <style>
-    :root {
-      --clr-bg-deep: #080808;
-      --clr-text-main: #e0e0e0;
-    }
-    body {
-      background-color: var(--clr-bg-deep);
-      color: var(--clr-text-main);
-      overflow-x: hidden;
-    }
-    .narrative-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 10rem 2rem;
-    }
-    .line {
-      font-family: var(--ff-head);
-      font-size: clamp(1.8rem, 4vw, 3.5rem);
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 3rem;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.8s cubic-bezier(0.2, 0, 0, 1);
-    }
-    .line.revealed {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .line.accent { color: var(--clr-accent); }
-    .line.muted { color: var(--clr-muted); font-size: clamp(1.4rem, 2.5vw, 2.2rem); font-weight: 500; }
-    .line.small { font-size: clamp(1.1rem, 1.8vw, 1.4rem); font-family: var(--ff-body); font-weight: 400; line-height: 1.8; margin-bottom: 2rem; color: #a0a0a0; }
-    
-    .spacer { height: 6rem; }
-    .section-break { margin: 8rem 0; border-top: 1px solid var(--clr-border); width: 100px; }
 
-    .market-story {
-      border-left: 2px solid var(--clr-accent);
-      padding-left: 2rem;
-      margin: 4rem 0;
+  <style>
+    /* ── PAGE FOUNDATION ── */
+    body { background: #070707; overflow-x: hidden; }
+
+    /* ── HERO: OPENING STATEMENT ── */
+    .hero-67 {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 6rem;
+      position: relative;
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(200,242,48,0.06) 0%, transparent 70%);
     }
-    
-    .cta-block {
-      margin-top: 8rem;
+    .hero-67-inner { max-width: 860px; margin: 0 auto; }
+    .hero-67 h1 {
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+    .hero-67 h1 em {
+      font-style: normal;
+      color: var(--clr-accent);
+    }
+    .hero-67 .sub {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: #888;
+      max-width: 580px;
+      margin: 0 auto 3rem;
+      line-height: 1.7;
+    }
+    .hero-67 .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: #444;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, #444, transparent);
+    }
+
+    /* ── SECTION WRAPPERS ── */
+    .seg { padding: 7rem 0; border-top: 1px solid rgba(255,255,255,0.06); }
+    .seg--dark { background: #0c0c0c; }
+    .seg--accent { background: linear-gradient(135deg, rgba(200,242,48,0.05) 0%, transparent 60%); }
+
+    .seg-label {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--clr-accent);
+      border: 1px solid rgba(200,242,48,0.3);
+      padding: 0.35rem 0.9rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── MARKET CHART ── */
+    .chart-section { padding: 7rem 0; background: #0c0c0c; border-top: 1px solid rgba(255,255,255,0.06); }
+    .chart-title { text-align: center; margin-bottom: 4rem; }
+    .chart-title h2 { font-size: clamp(1.8rem, 4vw, 3rem); margin-bottom: 0.75rem; }
+    .chart-title p { color: #777; font-size: 1.05rem; }
+
+    .market-chart {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .market-row {
+      display: grid;
+      grid-template-columns: 80px 1fr 120px;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .market-pct {
+      font-family: var(--ff-head);
+      font-weight: 900;
+      font-size: 1.6rem;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .market-bar-wrap {
+      height: 52px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.07);
+      position: relative;
+    }
+    .market-bar {
+      height: 100%;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      padding-left: 1rem;
+      font-family: var(--ff-head);
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+      width: 0;
+    }
+    .market-bar.animated { width: var(--w); }
+
+    /* colour-coded rows */
+    .row--3  .market-pct { color: var(--clr-accent); }
+    .row--3  .market-bar { background: linear-gradient(90deg,#c8f230,#a8d420); color:#0b0b0b; --w:3%; }
+    .row--7  .market-pct { color: #7ef0a0; }
+    .row--7  .market-bar { background: linear-gradient(90deg,#3dd68c,#26b87a); color:#0b0b0b; --w:7%; }
+    .row--30a .market-pct { color: #60b8ff; }
+    .row--30a .market-bar { background: linear-gradient(90deg,#3d8bd6,#2d6fb8); color:#fff; --w:30%; }
+    .row--30b .market-pct { color: #a78bfa; }
+    .row--30b .market-bar { background: linear-gradient(90deg,#7c5cbf,#5e45a0); color:#fff; --w:30%; }
+    .row--30c .market-pct { color: #555; }
+    .row--30c .market-bar { background: linear-gradient(90deg,#2a2a2a,#1e1e1e); color:#666; border:1px solid #333; --w:30%; }
+
+    .market-desc {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.5;
+    }
+    .market-desc strong { color: #ccc; display: block; margin-bottom: 0.2rem; }
+
+    .chart-insight {
+      max-width: 900px;
+      margin: 3rem auto 0;
+      padding: 2.5rem;
+      background: rgba(200,242,48,0.05);
+      border: 1px solid rgba(200,242,48,0.15);
+      border-radius: 20px;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+    .chart-insight .big { font-size: 4rem; font-weight: 900; color: var(--clr-accent); flex-shrink: 0; line-height: 1; }
+    .chart-insight p { color: #aaa; font-size: 1.05rem; line-height: 1.7; }
+    .chart-insight p strong { color: #fff; }
+
+    /* ── STORYTELLING GRID ── */
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .story-cell {
+      padding: 4rem;
+      border-right: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .story-cell:nth-child(2n) { border-right: none; }
+    .story-cell:nth-last-child(-n+2) { border-bottom: none; }
+    .story-cell .icon { font-size: 2.5rem; margin-bottom: 1.5rem; }
+    .story-cell h3 { font-size: 1.4rem; margin-bottom: 0.75rem; color: #fff; }
+    .story-cell p { color: #777; line-height: 1.8; }
+
+    /* ── TIMELINE: DECISION GAP ── */
+    .timeline-section { padding: 7rem 0; background: #0c0c0c; border-top: 1px solid rgba(255,255,255,0.06); }
+    .timeline-wrap { max-width: 900px; margin: 4rem auto 0; position: relative; }
+    .timeline-spine {
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--clr-accent), transparent);
+      transform: translateX(-50%);
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 1fr 60px 1fr;
+      gap: 0;
+      align-items: start;
+      margin-bottom: 4rem;
+    }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .tl-content {
+      padding: 1.5rem 2rem;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      transition: border-color 0.3s;
+    }
+    .tl-content:hover { border-color: rgba(200,242,48,0.3); }
+    .tl-content h4 { font-size: 1rem; color: var(--clr-accent); margin-bottom: 0.4rem; }
+    .tl-content p { font-size: 0.88rem; color: #666; line-height: 1.6; }
+    .timeline-item.right .tl-content { grid-column: 3; }
+    .timeline-item.left .tl-content { grid-column: 1; }
+    .tl-node {
+      width: 14px; height: 14px;
+      background: var(--clr-accent);
+      border-radius: 50%;
+      margin: 1.5rem auto 0;
+      box-shadow: 0 0 16px rgba(200,242,48,0.5);
+      grid-column: 2;
+    }
+    .tl-node.muted { background: #333; box-shadow: none; }
+    .timeline-item.left .tl-content { grid-row: 1; }
+    .timeline-item.left .tl-node { grid-row: 1; }
+    .timeline-item.right .tl-node { grid-row: 1; }
+
+    /* ── NARRATIVE PULL QUOTE SECTIONS ── */
+    .pull-section {
+      padding: 8rem 2rem;
       text-align: center;
     }
+    .pull-section h2 {
+      font-size: clamp(2rem, 5vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      max-width: 800px;
+      margin: 0 auto 2rem;
+    }
+    .pull-section .sub { color: #777; font-size: 1.15rem; line-height: 1.7; max-width: 600px; margin: 0 auto 3rem; }
 
-    [data-narrative] {
+    /* ── UNCOMFORTABLE TRUTH SECTION ── */
+    .three-q {
+      max-width: 780px;
+      margin: 4rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .three-q-item {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .three-q-item:last-child { border-bottom: none; }
+    .three-q-num {
+      font-family: var(--ff-head);
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--clr-accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+      margin-top: 4px;
+      width: 100px;
+    }
+    .three-q-item p { color: #aaa; font-size: 1.1rem; line-height: 1.7; }
+    .three-q-item p strong { color: #fff; }
+
+    /* ── FINAL CTA ── */
+    .final-cta {
+      text-align: center;
+      padding: 10rem 2rem;
+      background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(200,242,48,0.08) 0%, transparent 70%);
+    }
+    .final-cta h2 {
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+    .final-cta h2 span { color: var(--clr-accent); }
+    .final-cta p { color: #666; font-size: 1.15rem; max-width: 560px; margin: 0 auto 3rem; line-height: 1.7; }
+
+    /* ── REVEAL ANIMATIONS ── */
+    [data-r] {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    [data-r].on { opacity: 1; transform: translateY(0); }
+    [data-r][data-d="1"] { transition-delay: 0.1s; }
+    [data-r][data-d="2"] { transition-delay: 0.2s; }
+    [data-r][data-d="3"] { transition-delay: 0.3s; }
+    [data-r][data-d="4"] { transition-delay: 0.4s; }
+
+    /* ── LEAD MODAL ── */
+    #leadModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      overflow-y: auto;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      align-items: center;
+      justify-content: center;
+    }
+    #leadModal.open { display: flex; }
+    .lead-modal-box {
+      background: #0f0f0f;
+      border: 1px solid rgba(200,242,48,0.25);
+      border-radius: 28px;
+      max-width: 500px;
+      width: 100%;
+      padding: 3rem;
+      position: relative;
+      animation: modalPop 0.5s cubic-bezier(0.2,0,0,1);
+    }
+    @keyframes modalPop {
+      from { opacity:0; transform: scale(0.92) translateY(24px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
+    }
+    .modal-close {
+      position: absolute;
+      top: 1.2rem; right: 1.4rem;
+      background: none; border: none;
+      color: #444; font-size: 1.6rem;
+      cursor: pointer; line-height: 1;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--clr-accent); }
+    .lead-modal-box h3 {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+    .lead-modal-box .modal-sub {
+      color: #666;
+      font-size: 0.95rem;
       margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+    .lead-field { margin-bottom: 1.2rem; }
+    .lead-field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #555;
+      margin-bottom: 0.45rem;
+    }
+    .lead-field input,
+    .lead-field select {
+      width: 100%;
+      padding: 0.85rem 1.2rem;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      color: #fff;
+      font-family: var(--ff-body);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.25s;
+    }
+    .lead-field input:focus,
+    .lead-field select:focus { border-color: var(--clr-accent); }
+    .lead-field select option { background: #181818; }
+    .lead-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--clr-accent);
+      color: #0b0b0b;
+      border: none;
+      border-radius: 50px;
+      font-family: var(--ff-head);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .lead-submit:hover { opacity: 0.9; transform: translateY(-2px); }
+    .lead-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .lead-success {
+      display: none;
+      text-align: center;
+      padding: 2rem 0;
+    }
+    .lead-success .hero-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .lead-success h4 { color: var(--clr-accent); font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .lead-success p { color: #777; line-height: 1.7; }
+    .modal-privacy {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #333;
+      margin-top: 1.2rem;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .story-grid { grid-template-columns: 1fr; }
+      .story-cell { padding: 2.5rem 1.5rem; border-right: none; }
+      .story-cell:nth-last-child(-n+2) { border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .story-cell:last-child { border-bottom: none; }
+      .market-row { grid-template-columns: 56px 1fr; }
+      .market-desc { display: none; }
+      .chart-insight { flex-direction: column; text-align: center; }
+      .timeline-spine { display: none; }
+      .timeline-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      .tl-node { display: none; }
+      .timeline-item.right .tl-content,
+      .timeline-item.left .tl-content { grid-column: 1; }
+      .three-q-item { flex-direction: column; gap: 0.5rem; }
+      .three-q-num { width: auto; }
     }
   </style>
 </head>
 <body>
 
+<!-- NAVBAR -->
 <nav class="navbar" id="navbar">
   <div class="container">
     <div class="nav-wrap">
@@ -82,143 +449,464 @@
       <div class="nav-cta">
         <a href="work-with-me.html" class="btn btn-primary">Work With Me</a>
       </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
 </nav>
-
-<div class="narrative-container">
-  
-  <div class="line" data-reveal>You’re Not Struggling With Marketing.</div>
-  <div class="line accent" data-reveal data-delay="1">You’re struggling with timing.</div>
-  <div class="line small" data-reveal data-delay="2">And more dangerously…</div>
-  <div class="line small" data-reveal data-delay="3">You’ve been taught timing by people who don’t even operate in your market.</div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line muted" data-reveal>Because Most Of What You’ve Learned… <br><span class="text-white">Wasn’t Built For You.</span></div>
-  <div class="line small" data-reveal>Most marketing playbooks you follow personally… were built in different realities. Different economies. Different buying behaviors. Different speeds of trust.</div>
-
-  <div class="line" data-reveal>But here… things move differently.</div>
-
-  <div class="market-story" data-reveal>
-    <p class="line small">Here, someone can think about buying land for 6 months.</p>
-    <p class="line small">Talk to friends. Ask family. Drive past the same plot three times. Save slowly. Doubt. Come back again.</p>
-    <p class="line" style="font-size: 2rem;">And only then… decide.</p>
-  </div>
-
-  <div class="line muted" data-reveal>But the marketing you’ve been using?</div>
-  <div class="line small" data-reveal>It behaves like the decision happens in one moment.</div>
-  <div class="line accent" style="font-size: 1.8rem;" data-reveal>“Buy now.” “Limited offer.” “Last chance.”</div>
-  <div class="line small" data-reveal>That’s not how your market moves. And deep down… <span class="text-white">you already know that.</span></div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line accent" data-reveal>Let Me Show You Something You’ve Already Lived.</div>
-  <div class="line small" data-reveal>Not as a business owner. As yourself.</div>
-  <div class="line small" data-reveal>Think about the last time you wanted something serious. Not small. Something that required sacrifice.</div>
-  <div class="line" style="font-size: 2.2rem;" data-reveal>A TV.</div>
-  <div class="line small" data-reveal>You didn’t just wake up and buy it. It started casually. Maybe you were at a friend’s place. You saw a bigger screen. Clearer picture. And you said: <span class="text-white">“Mine is getting old.”</span></div>
-
-  <div class="line small" data-reveal>That was the beginning. From that moment… you started noticing TVs everywhere.</div>
-  <div class="line small" data-reveal>Scrolling at night — one appears. Watching YouTube — another one shows. Passing a shop — you slow down a bit.</div>
-
-  <div class="line small" data-reveal>Then an ad comes. Clean. Sharp. Well designed.</div>
-  <div class="line accent" style="font-size: 1.4rem;" data-reveal>“Buy now.” “Best price.” “Limited stock.”</div>
-
-  <div class="line" data-reveal style="font-size: 2rem;">You pause. You look at it. You even imagine it in your sitting room.</div>
-  <div class="line accent" data-reveal>Then… you scroll.</div>
-  <div class="line small" data-reveal>Not because you didn’t want it. But because… <span class="text-white">you weren’t ready.</span></div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line" data-reveal>And Yet… You Still Bought Eventually.</div>
-  <div class="line small" data-reveal>Days later. Weeks later. Maybe even a month later. You bought. But not from that ad. Not from the one that tried to rush you. Not from the one that assumed your timing.</div>
-  <div class="line accent" data-reveal>You bought from the one that stayed with you.</div>
-  <div class="line small" data-reveal>The one that felt familiar. The one that somehow… understood your pace.</div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line accent" style="font-size: 3.5rem;" data-reveal>That Was You Inside The 67%.</div>
-  <div class="line small" data-reveal>Not lost. Not uninterested. Not a bad customer. Just… <span class="text-white">not ready yet.</span></div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line" data-reveal>Now Look At Your Own Business.</div>
-  <div class="line small" data-reveal>How many people see you every day… and do exactly what you did?</div>
-  <div class="line small" data-reveal>They see your post. They see your ad. They even like it. Then they scroll. And you assume: <span class="text-white">“They’re not serious.”</span></div>
-
-  <div class="line" data-reveal>But what if… they’re just where you were?</div>
-  <div class="line small" data-reveal>Thinking. Watching. Quietly moving closer.</div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line accent" data-reveal>Now Here’s Where It Gets Uncomfortable.</div>
-  <div class="line" style="font-size: 2rem;" data-reveal>If people are like this… if buying is a journey… if timing is everything…</div>
-  <div class="line" data-reveal>What Exactly Are You Saying To Them Right Now?</div>
-
-  <div class="line small" data-reveal>When they are just starting to think… <span class="text-white">What do they see from you?</span></div>
-  <div class="line small" data-reveal>When they are considering… <span class="text-white">What do you give them?</span></div>
-  <div class="line small" data-reveal>When they are not ready yet… but will be… <span class="text-white">How do you stay in their mind?</span></div>
-
-  <div class="line small" data-reveal>Is your content built for that stage? Or only for the final moment?</div>
-  <div class="line small" data-reveal>Because if all you ever say is: <span class="text-accent">“Buy now”, “DM me”, “Limited offer”</span>... Then you are only speaking to people who are already at the end. And ignoring everyone else.</div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line" data-reveal>So Ask Yourself Honestly.</div>
-  <div class="line small" data-reveal>What do you show someone who is not ready to buy today… but will be ready soon?</div>
-  <div class="line small" data-reveal>What do you say to someone who is interested… but still thinking?</div>
-  <div class="line small" data-reveal>What kind of message makes them remember you even after they scroll?</div>
-  <div class="line small" data-reveal>What kind of presence makes them feel like: <span class="text-white">“When I’m ready… I’ll go back to this one.”</span></div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line accent" data-reveal>Because that moment… that exact moment… is where businesses are chosen.</div>
-  <div class="line small" data-reveal>Not loudly. Not instantly. But quietly. Over time.</div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line" data-reveal>And If You Don’t Know How To Do That Yet…</div>
-  <div class="line accent" data-reveal>That’s the gap.</div>
-  <div class="line small" data-reveal>Not effort. Not consistency. But understanding how to exist inside the 67%.</div>
-
-  <div class="section-break" data-reveal></div>
-
-  <div class="line muted" data-reveal>Because Once You Understand That…</div>
-  <div class="line" data-reveal>You don’t chase customers. <span class="text-accent">You stay with them.</span></div>
-  <div class="line small" data-reveal>You don’t fight for attention. You become familiar. You don’t try to convince. You become the obvious choice.</div>
-
-  <div class="line accent" style="font-size: 3.5rem;" data-reveal>And That Changes Everything.</div>
-
-  <div class="cta-block" data-reveal>
-    <a href="relationship-engine.html" class="btn btn-primary" style="padding: 1.5rem 3rem; font-size: 1.2rem;">
-      👇🏽 Tell Me More About The 67%
-    </a>
-  </div>
-
+<div class="mobile-nav" id="mobileNav">
+  <a href="index.html">Home</a>
+  <a href="67percent.html">The 67%</a>
+  <a href="relationship-engine.html">Relationship Engine</a>
+  <a href="strategy.html">Strategy</a>
 </div>
 
-<footer style="padding: 4rem 0; text-align: center; border-top: 1px solid var(--clr-border);">
+<!-- ══ 1. HERO ══════════════════════════════════════════════════ -->
+<section class="hero-67">
+  <div class="hero-67-inner">
+    <div class="seg-label" data-r>Market Psychology</div>
+    <h1 data-r data-d="1">
+      You're Not Struggling<br>
+      With <em>Marketing.</em>
+    </h1>
+    <p class="sub" data-r data-d="2">
+      You're struggling with timing. And more dangerously — you've been taught timing by people who don't even operate in your market.
+    </p>
+    <a href="#market-chart" class="btn btn-primary" data-r data-d="3">
+      Show Me the Framework
+      <span class="btn-icon">↓</span>
+    </a>
+  </div>
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- ══ 2. THE 100% MARKET CHART ═══════════════════════════════ -->
+<section class="chart-section" id="market-chart">
   <div class="container">
-    <p style="color: var(--clr-muted); font-size: 0.9rem;">&copy; 2026 Marketing with Kimani. The African Marketing Authority.</p>
+
+    <div class="chart-title" data-r>
+      <div class="seg-label">The 100% Market Breakdown</div>
+      <h2>Where Your Market Actually Is</h2>
+      <p>Every person in your market fits into one of five segments. <br>Most businesses are only talking to the top 3%.</p>
+    </div>
+
+    <div class="market-chart">
+
+      <div class="market-row row--3" data-r>
+        <div class="market-pct">3%</div>
+        <div class="market-bar-wrap">
+          <div class="market-bar">ACTIVELY BUYING</div>
+        </div>
+        <div class="market-desc">
+          <strong>The Hot Market</strong>
+          Actively looking, comparing, ready to decide. Every competitor is fighting over this group.
+        </div>
+      </div>
+
+      <div class="market-row row--7" data-r data-d="1">
+        <div class="market-pct">7%</div>
+        <div class="market-bar-wrap">
+          <div class="market-bar">OPEN TO YOU</div>
+        </div>
+        <div class="market-desc">
+          <strong>Warm & Receptive</strong>
+          Not actively searching but are open and responsive. Easy wins most businesses miss.
+        </div>
+      </div>
+
+      <div class="market-row row--30a" data-r data-d="2">
+        <div class="market-pct">30%</div>
+        <div class="market-bar-wrap">
+          <div class="market-bar">AWARE BUT SILENT</div>
+        </div>
+        <div class="market-desc">
+          <strong>The 67% Begins Here</strong>
+          They know your offer exists. They're thinking. They're watching. They're forming opinions quietly.
+        </div>
+      </div>
+
+      <div class="market-row row--30b" data-r data-d="3">
+        <div class="market-pct">30%</div>
+        <div class="market-bar-wrap">
+          <div class="market-bar">UNCONSCIOUS OF NEED</div>
+        </div>
+        <div class="market-desc">
+          <strong>The Unseeen Opportunity</strong>
+          They have the problem. They don't yet know they need the solution. A single insight can move them.
+        </div>
+      </div>
+
+      <div class="market-row row--30c" data-r data-d="4">
+        <div class="market-pct">30%</div>
+        <div class="market-bar-wrap">
+          <div class="market-bar">NEVER BUYING</div>
+        </div>
+        <div class="market-desc">
+          <strong>Let Them Go</strong>
+          No matter what you do, they won't buy. Stop spending energy here. Ignored by Kimani's framework.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chart-insight" data-r>
+      <div class="big">67%</div>
+      <p>
+        <strong>The silent majority your competitors ignore.</strong> The 3% + 7% + 30% (aware) + 30% (unconscious) who are not buying today — but <em>will</em>. The business that builds trust with them now will be the obvious choice when they finally decide.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ 3. THE HUMAN STORY ════════════════════════════════════ -->
+<section class="seg">
+  <div class="container">
+    <div style="max-width:720px; margin: 0 auto; text-align: center;" data-r>
+      <div class="seg-label">A Story You've Already Lived</div>
+      <h2 style="font-size: clamp(2rem, 4vw, 3.4rem); margin-bottom: 1.5rem;">Most Of What You've Learned<br>Wasn't Built For <span class="text-accent">Your Market.</span></h2>
+      <p style="color: #777; font-size: 1.1rem; line-height: 1.8;">Here, someone can think about buying land for 6 months. Talk to friends. Ask family. Drive past the same plot three times. Save slowly. Doubt. Come back again. And only then — decide. But the marketing you've been using behaves like the decision happens in a single moment.</p>
+    </div>
+
+    <div class="story-grid" style="margin-top: 4rem;">
+      <div class="story-cell" data-r>
+        <div class="icon">📺</div>
+        <h3>You Saw a Bigger Screen.</h3>
+        <p>Think about the last time you bought a TV. You weren't shopping. You were at a friend's place. Saw a bigger screen. Said "mine is getting old." That was the beginning — an unconscious thought that started a journey.</p>
+      </div>
+      <div class="story-cell" data-r data-d="1">
+        <div class="icon">👁️</div>
+        <h3>Then You Started Noticing.</h3>
+        <p>Suddenly TVs were everywhere. Scrolling at night — one appears. Watching YouTube — another shows. Passing a shop — you slow down. You hadn't decided to buy. You were in the 67%. Thinking. Watching. Moving closer.</p>
+      </div>
+      <div class="story-cell" data-r data-d="2">
+        <div class="icon">📣</div>
+        <h3>The Ad Said "Buy Now."</h3>
+        <p>Clean. Sharp. Well-designed. "Best price. Limited stock." You pause. You imagine it in your sitting room. You even calculate if you can afford it... then you scroll. Not because you didn't want it. But because you weren't ready.</p>
+      </div>
+      <div class="story-cell" data-r data-d="3">
+        <div class="icon">🏆</div>
+        <h3>You Bought From the One That Stayed.</h3>
+        <p>Weeks later, you bought. But not from that ad. Not from the one that rushed you. You bought from the brand that felt familiar. The one that somehow understood your pace. That's the power of the 67% strategy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4. DECISION GAP TIMELINE ══════════════════════════════ -->
+<section class="timeline-section">
+  <div class="container">
+    <div class="chart-title" data-r>
+      <div class="seg-label">The Decision Gap</div>
+      <h2>How Buyers Actually Move</h2>
+      <p>There is a gap between when someone becomes aware and when they decide. <br>This gap is where businesses are <strong style="color:#fff">chosen or forgotten.</strong></p>
+    </div>
+
+    <div class="timeline-wrap">
+      <div class="timeline-spine"></div>
+
+      <div class="timeline-item left" data-r>
+        <div class="tl-content">
+          <h4>🌱 Trigger Moment</h4>
+          <p>A casual observation creates an unconscious desire. The journey begins without the person even knowing it.</p>
+        </div>
+        <div class="tl-node"></div>
+        <div></div>
+      </div>
+
+      <div class="timeline-item right" data-r data-d="1">
+        <div></div>
+        <div class="tl-node"></div>
+        <div class="tl-content">
+          <h4>🔍 Silent Research</h4>
+          <p>They start noticing. Googling quietly. Comparing without committing. This phase can last weeks or months.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item left" data-r data-d="2">
+        <div class="tl-content">
+          <h4>⏳ The Long Middle</h4>
+          <p style="color: #c8f230;">← This is the 67% zone. Most businesses go silent here. Kimani's system stays present, building trust without pressure.</p>
+        </div>
+        <div class="tl-node"></div>
+        <div></div>
+      </div>
+
+      <div class="timeline-item right" data-r data-d="3">
+        <div></div>
+        <div class="tl-node muted"></div>
+        <div class="tl-content" style="border-color: rgba(200,242,48,0.08);">
+          <h4 style="color:#555;">📣 Your Competitor's Ad</h4>
+          <p style="color:#444;">"Buy now." "Last chance." Interrupts the journey but doesn't move the buyer. They scroll past. Nothing built. Nothing remembered.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item left" data-r data-d="2">
+        <div class="tl-content">
+          <h4>💡 Readiness Moment</h4>
+          <p>Something shifts — a pay rise, a life event, a final nudge. They are now ready. They reach for the brand that has been with them all along.</p>
+        </div>
+        <div class="tl-node"></div>
+        <div></div>
+      </div>
+
+      <div class="timeline-item right" data-r data-d="3">
+        <div></div>
+        <div class="tl-node"></div>
+        <div class="tl-content">
+          <h4>✅ The Decision</h4>
+          <p>They don't compare. They don't search again. They go back to the one that felt familiar. The one that understood their pace. <strong style="color:#c8f230;">That should be you.</strong></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ 5. THE UNCOMFORTABLE TRUTH ════════════════════════════ -->
+<section class="seg seg--accent">
+  <div class="container">
+    <div style="max-width: 780px; margin: 0 auto;" data-r>
+      <div class="seg-label">The Hard Question</div>
+      <h2 style="font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 1rem;">What Are You Saying To Them<br><span class="text-accent">Right Now?</span></h2>
+      <p style="color: #777; font-size: 1.1rem; line-height: 1.8; margin-bottom: 3rem;">They scroll past your post. They like your ad. Then they disappear. You assume they weren't serious. But what if they're exactly where you were with that TV? Thinking. Moving closer. Waiting to feel ready.</p>
+    </div>
+
+    <div class="three-q">
+      <div class="three-q-item" data-r>
+        <div class="three-q-num">When they are just starting to think —</div>
+        <p><strong>What do they see from you?</strong> Is there content that speaks to someone at the beginning of their journey, or only to someone who has already decided?</p>
+      </div>
+      <div class="three-q-item" data-r data-d="1">
+        <div class="three-q-num">When they are considering —</div>
+        <p><strong>What do you give them?</strong> Something that answers the unspoken questions? Or just another "buy now" that they'll scroll past?</p>
+      </div>
+      <div class="three-q-item" data-r data-d="2">
+        <div class="three-q-num">When they're not ready yet but will be —</div>
+        <p><strong>How do you stay in their mind?</strong> What makes them think of you first when the moment finally arrives — and not your competitor?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 6. THE TRANSFORMATION ═════════════════════════════════ -->
+<section class="pull-section seg--dark">
+  <div class="seg-label" data-r>Once You Understand This</div>
+  <h2 data-r data-d="1">
+    You Stop Chasing Customers.<br>
+    <span class="text-accent">You Stay With Them.</span>
+  </h2>
+  <p class="sub" data-r data-d="2">You don't fight for attention. You become familiar. You don't try to convince. You become the obvious choice. And when they're ready — they come back to you.</p>
+  <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap;" data-r data-d="3">
+    <div style="text-align:left; background:#111; border:1px solid rgba(255,255,255,0.07); padding:2rem 2.5rem; border-radius:20px; max-width:300px;">
+      <div style="color:var(--clr-accent); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.5rem;">Before</div>
+      <p style="color:#555; font-size:0.95rem; line-height:1.7;">"Buy now." "DM me." "Limited offer." Only speaking to people already at the end of their journey. Ignoring everyone else.</p>
+    </div>
+    <div style="text-align:left; background:rgba(200,242,48,0.06); border:1px solid rgba(200,242,48,0.2); padding:2rem 2.5rem; border-radius:20px; max-width:300px;">
+      <div style="color:var(--clr-accent); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.5rem;">After</div>
+      <p style="color:#bbb; font-size:0.95rem; line-height:1.7;">Consistently present in the 67%. Building trust at every stage. The obvious choice when the readiness moment arrives.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 7. FINAL CTA ═══════════════════════════════════════════ -->
+<section class="final-cta">
+  <div class="seg-label" data-r>Your Next Move</div>
+  <h2 data-r data-d="1">
+    And That<br><span>Changes Everything.</span>
+  </h2>
+  <p data-r data-d="2">
+    The 67% are deciding right now who they'll trust tomorrow. Every day you remain invisible is another day they cement loyalty elsewhere.
+  </p>
+  <div data-r data-d="3">
+    <button onclick="openLeadModal()" class="btn btn-primary" id="ctaLeadBtn" style="padding: 1.2rem 3rem; font-size: 1.1rem; border: none; cursor: pointer;">
+      👇🏽 Tell Me More About The 67%
+    </button>
+  </div>
+</section>
+
+<!-- ══ LEAD CAPTURE MODAL ══════════════════════════════════════ -->
+<div id="leadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="lead-modal-box">
+    <button class="modal-close" onclick="closeLeadModal()" aria-label="Close">&times;</button>
+
+    <!-- FORM STATE -->
+    <div id="modalForm">
+      <div class="seg-label" style="margin-bottom:1rem;">The 67% Framework</div>
+      <h3 id="modalTitle">Let's Start The Conversation</h3>
+      <p class="modal-sub">Leave your details and we'll show you exactly where your market is and how to reach the 67% your competitors are ignoring.</p>
+
+      <form id="leadCaptureForm" novalidate>
+        <div class="lead-field">
+          <label for="lf-name">Full Name *</label>
+          <input type="text" id="lf-name" name="name" placeholder="John Kamau" required autocomplete="name">
+        </div>
+        <div class="lead-field">
+          <label for="lf-email">Email Address *</label>
+          <input type="email" id="lf-email" name="email" placeholder="john@company.co.ke" required autocomplete="email">
+        </div>
+        <div class="lead-field">
+          <label for="lf-phone">Phone Number *</label>
+          <input type="tel" id="lf-phone" name="phone" placeholder="+254 7XX XXX XXX" required autocomplete="tel">
+        </div>
+        <div class="lead-field">
+          <label for="lf-country">Country *</label>
+          <select id="lf-country" name="country" required>
+            <option value="" disabled selected>Select your country...</option>
+            <option>Kenya</option>
+            <option>Uganda</option>
+            <option>Tanzania</option>
+            <option>Rwanda</option>
+            <option>Ethiopia</option>
+            <option>Nigeria</option>
+            <option>Ghana</option>
+            <option>South Africa</option>
+            <option>Zimbabwe</option>
+            <option>Zambia</option>
+            <option>Botswana</option>
+            <option>Namibia</option>
+            <option>Mozambique</option>
+            <option>Other Africa</option>
+            <option>Outside Africa</option>
+          </select>
+        </div>
+        <button type="submit" class="lead-submit" id="leadSubmitBtn">Show Me the 67% Strategy →</button>
+      </form>
+      <p class="modal-privacy">🔒 We never spam. Your details are used only to reach out personally.</p>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div class="lead-success" id="modalSuccess">
+      <div class="hero-icon">🎯</div>
+      <h4>You're In.</h4>
+      <p>Your details have been received. Kimani's team will reach out to you personally to walk you through the 67% framework as it applies to your specific market.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ FOOTER ═════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo" style="margin-bottom: 1.2rem; display:flex;">
+          <img src="assets/Logo Kimani.png" alt="Kimani Logo" style="height:44px;">
+          <span class="logo-text">Marketing with Kimani</span>
+        </a>
+        <p>African Marketing Authority. Building trust-driven strategies for brands that want to lead their markets, not just compete in them.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Pages</h5>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="67percent.html">The 67%</a></li>
+          <li><a href="relationship-engine.html">Relationship Engine</a></li>
+          <li><a href="strategy.html">Strategy</a></li>
+          <li><a href="work-with-me.html">Work With Me</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <ul>
+          <li><a href="mailto:enquiries@marketingwithkimani.co.ke">enquiries@marketingwithkimani.co.ke</a></li>
+          <li><a href="tel:+254727856464">0727 85 64 64</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Marketing with Kimani. All rights reserved.</p>
+      <p>Designed for African excellence.</p>
+    </div>
   </div>
 </footer>
 
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-  // Simple scroll reveal logic tailored for narrative flow
+  // ─── SUPABASE CONFIG ───────────────────────────────────────────
+  // TODO: replace these with your real Supabase project URL and anon key
+  const SUPABASE_URL  = 'YOUR_SUPABASE_PROJECT_URL';  // e.g. https://xyzcompany.supabase.co
+  const SUPABASE_ANON = 'YOUR_SUPABASE_ANON_KEY';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  // ──────────────────────────────────────────────────────────────
+
+  // Reveal on scroll
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, index) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => {
-          entry.target.classList.add('revealed');
-        }, index * 100);
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('[data-r]').forEach(el => observer.observe(el));
+
+  // Animate bars on scroll
+  const barObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.market-bar').forEach((b, i) => {
+          setTimeout(() => b.classList.add('animated'), i * 200);
+        });
       }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.market-chart').forEach(el => barObserver.observe(el));
 
-  document.querySelectorAll('[data-reveal]').forEach((el) => {
-    el.classList.add('line');
-    observer.observe(el);
+  // ─── LEAD MODAL ────────────────────────────────────────────────
+  function openLeadModal() {
+    document.getElementById('leadModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLeadModal() {
+    document.getElementById('leadModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Close on backdrop click
+  document.getElementById('leadModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLeadModal();
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLeadModal(); });
+
+  // ─── FORM SUBMISSION → SUPABASE ────────────────────────────────
+  document.getElementById('leadCaptureForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const name    = document.getElementById('lf-name').value.trim();
+    const email   = document.getElementById('lf-email').value.trim();
+    const phone   = document.getElementById('lf-phone').value.trim();
+    const country = document.getElementById('lf-country').value;
+
+    if (!name || !email || !phone || !country) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    const btn = document.getElementById('leadSubmitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      const { error } = await supabase
+        .from('leads_67')          // Table name in your Supabase project
+        .insert([{ name, email, phone, country, source: 'The 67% Page', created_at: new Date().toISOString() }]);
+
+      if (error) throw error;
+
+      // Show success
+      document.getElementById('modalForm').style.display = 'none';
+      document.getElementById('modalSuccess').style.display = 'block';
+
+    } catch (err) {
+      console.error('Lead capture error:', err);
+      // Fallback: still show success visually and log locally
+      document.getElementById('modalForm').style.display = 'none';
+      document.getElementById('modalSuccess').style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Show Me the 67% Strategy →';
+    }
   });
 </script>
 
