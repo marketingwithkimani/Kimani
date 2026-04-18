@@ -158,7 +158,25 @@
   </div>
 </nav>
 
-<div class="discovery-container">
+<!-- ══ PAGE IDENTIFIER ═══════════════════════════════════════════ -->
+<div style="padding: 100px 0 20px 0; border-bottom: 1px solid var(--clr-border); background: #000;">
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+      <div>
+        <span class="badge" style="margin-bottom: 0.5rem;">ONBOARDING</span>
+        <h2 style="font-size: 1rem; text-transform: uppercase; letter-spacing: 0.2em; color: var(--clr-muted); margin: 0;">Discovery Session</h2>
+      </div>
+      <div style="text-align: right; display: flex; align-items: center; gap: 1rem;">
+         <div style="text-align: right;">
+           <div style="font-size: 0.7rem; color: var(--clr-muted); text-transform: uppercase;">Session ID</div>
+           <div style="font-weight: 700; color: var(--clr-white); font-size: 0.9rem; font-family: monospace;" id="displaySessionId">--------</div>
+         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="discovery-container" style="padding-top: 40px;">
   <div class="chat-window">
     <div class="chat-header">
       <div class="header-info">
@@ -205,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   let sessionId = 'onboarding-' + Math.random().toString(36).substr(2, 9);
+  document.getElementById('displaySessionId').innerText = sessionId.split('-')[1].toUpperCase();
 
   function addMessage(role, text) {
     const msgDiv = document.createElement('div');
