@@ -32,7 +32,7 @@ function getAnthropicClient() {
               ...params.messages.map((m: any) => ({ role: m.role, content: m.content }))
             ];
             const response = await axios.post("https://openrouter.ai/api/v1/chat/completions", {
-              model: "openai/gpt-4o-mini",
+              model: "openai/gpt-6-luna",
               messages: messagesWithSystem,
               max_tokens: params.max_tokens || 1000,
             }, {
@@ -48,7 +48,7 @@ function getAnthropicClient() {
           }
         }
       } as any,
-      model: "openai/gpt-4o-mini",
+      model: "openai/gpt-6-luna",
     };
   }
   return { client: new Anthropic({ apiKey: activeKey }), model: "claude-3-5-sonnet-latest" };
@@ -294,7 +294,7 @@ export async function generateResponse(
     // 4. Server-side cleanup + HARD-ENFORCEMENT BURST SPLITTER
     let bursts = responseText.split("[BURST]").map(b => b.trim()).filter(b => b.length > 0);
     
-    // ENFORCEMENT: If GPT-mini ignored [BURST] and returned 1 block, force-split at sentences
+    // ENFORCEMENT: If GPT-6-Luna ignored [BURST] and returned 1 block, force-split at sentences
     if (bursts.length < 2 && responseText.length > 80) {
       const sentences = responseText.match(/[^.!?]+[.!?]+/g) || [responseText];
       if (sentences.length >= 4) {

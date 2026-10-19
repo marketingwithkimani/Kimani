@@ -1,0 +1,47 @@
+# robots.txt — Marketing with Kimani
+# https://marketingwithkimani.co.ke
+
+# Allow all major search engine crawlers
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard.html
+Disallow: /leads_backup.json
+Disallow: /debug.log
+Disallow: /server_log.txt
+Disallow: /*.cjs$
+Disallow: /node_modules/
+
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard.html
+Disallow: /leads_backup.json
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+# Block all other bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+# Sitemap location
+Sitemap: https://marketingwithkimani.co.ke/sitemap.xml

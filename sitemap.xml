@@ -1,28 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+  xsi:schemaLocation="
+    http://www.sitemaps.org/schemas/sitemap/0.9
+    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+  <!-- ══ HOME ════════════════════════════════════════════════════ -->
   <url>
     <loc>https://marketingwithkimani.co.ke/</loc>
-    <lastmod>2026-04-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://marketingwithkimani.co.ke/assets/Image 1.jpeg</image:loc>
+      <image:title>Marketing with Kimani – Africa's Marketing Authority</image:title>
+      <image:caption>Kimani – Africa's leading trust-based marketing strategist based in Nairobi, Kenya</image:caption>
+    </image:image>
   </url>
+
+  <!-- ══ THE 67% MARKET ════════════════════════════════════════ -->
   <url>
     <loc>https://marketingwithkimani.co.ke/67percent.html</loc>
-    <lastmod>2026-04-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://marketingwithkimani.co.ke/assets/Image 1.jpeg</image:loc>
+      <image:title>The 67% Market – Africa's Silent Majority Strategy</image:title>
+      <image:caption>Discover the 67% of buyers in African markets who are watching, not yet buying</image:caption>
+    </image:image>
   </url>
+
+  <!-- ══ RELATIONSHIP ENGINE ════════════════════════════════════ -->
   <url>
     <loc>https://marketingwithkimani.co.ke/relationship-engine.html</loc>
-    <lastmod>2026-04-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://marketingwithkimani.co.ke/assets/Image 1.jpeg</image:loc>
+      <image:title>Relationship Engine – AI Trust-Building for Africa</image:title>
+      <image:caption>Africa's most advanced AI marketing trust-building system by Marketing with Kimani</image:caption>
+    </image:image>
   </url>
+
+  <!-- ══ STRATEGY ══════════════════════════════════════════════ -->
   <url>
     <loc>https://marketingwithkimani.co.ke/strategy.html</loc>
-    <lastmod>2026-04-18</lastmod>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://marketingwithkimani.co.ke/assets/Image 1.jpeg</image:loc>
+      <image:title>Corporate Marketing Strategy for African Markets</image:title>
+      <image:caption>Expert corporate strategy and market intelligence for Kenyan and African businesses</image:caption>
+    </image:image>
   </url>
+
+  <!-- ══ WORK WITH ME ══════════════════════════════════════════ -->
   <url>
     <loc>https://marketingwithkimani.co.ke/work-with-me.html</loc>
-    <lastmod>2026-04-18</lastmod>
-    <priority>0.8</priority>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://marketingwithkimani.co.ke/assets/Image 1.jpeg</image:loc>
+      <image:title>Work With Kimani – Africa's Top Marketing Strategist</image:title>
+      <image:caption>Partner with Kimani for corporate strategy, coaching, and AI-powered growth in African markets</image:caption>
+    </image:image>
   </url>
+
+  <!-- ══ DISCOVERY SESSION ══════════════════════════════════════ -->
+  <url>
+    <loc>https://marketingwithkimani.co.ke/discovery.html</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.75</priority>
+  </url>
+
 </urlset>
